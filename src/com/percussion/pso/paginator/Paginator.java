@@ -1,6 +1,6 @@
 /*
  * 
- * com.percussion.pso.scripps.paginator Paginator.java
+ * com.percussion.pso.paginator Paginator.java
  *  
  * @author Jesus Garcia
  *
@@ -20,7 +20,7 @@
  * 
  */
 
-package com.percussion.pso.scripps.paginator;
+package com.percussion.pso.paginator;
 
 import java.io.StringReader;
 
@@ -32,6 +32,7 @@ import com.percussion.extension.IPSJexlExpression;
 import com.percussion.extension.IPSJexlMethod;
 import com.percussion.extension.IPSJexlParam;
 import com.percussion.extension.PSJexlUtilBase;
+import org.apache.commons.lang.StringUtils;
 
 
 public class Paginator extends PSJexlUtilBase implements IPSJexlExpression
@@ -71,6 +72,10 @@ public class Paginator extends PSJexlUtilBase implements IPSJexlExpression
           @IPSJexlParam(name="pageNumber", description="Page number") }) 
     public String getPage(String fieldContent, String pageNumber)
     {
+    	if (StringUtils.isBlank(pageNumber) || !StringUtils.isNumeric(pageNumber) )
+		{
+			return fieldContent;
+		}
     	try
     	{
     		InputSource in = createInputStreamXML(fieldContent);    		
@@ -79,9 +84,10 @@ public class Paginator extends PSJexlUtilBase implements IPSJexlExpression
        	}
     	catch (Exception e)
        {
-          log.error("Error getting content = ", e);          
-          return ""; 
-       } 
+          log.error("Error getting content = ", e);    
+          return "";
+       }
+    	 
     }
     /*
      *  To create an Input source for the SAX parser
