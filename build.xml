@@ -1,0 +1,126 @@
+<project name="ScrippsPaginator" default="dist" basedir=".">
+	<description>
+       Scripps Paginator code
+    </description>
+	<!-- set global properties for this build -->
+    
+	<property environment="env"/>
+	<!-- base directory of Rhythmyx installation --> 
+	<property name="rhino.home" location="${env.RHINO_HOME}"/>
+	<!-- name of Rhythmyx Service -->
+	<property name="rhino.service" value="${env.RHINO_SERVICE}"/>
+	<!-- base of Axis Path -->
+	<property name="axis_home" location="${env.AXIS_HOME}"/> 
+	<!-- name of our output jar --> 
+	<property name="jarname" value="Scripps-Paginator.jar" />	
+	<!-- name of our distribution zip -->
+	<property name="distfile" value="Scripps-Paginator.zip" />
+	
+	<!-- Spring configuration for ContentListServlet -->
+	<property name="spring.contentlist" value="paginatorContentListServlet.xml"/>
+	
+	<property name="rhino.lib" 
+	value="${rhino.home}/AppServer/server/rx/deploy/rxapp.ear/rxapp.war/WEB-INF/lib"/>
+	<property name="rhino.spring"
+	value="${rhino.home}/AppServer/server/rx/deploy/rxapp.ear/rxapp.war/WEB-INF/config/user/spring"/>
+    <property name="jboss.lib" 
+	value="${rhino.home}/AppServer/server/rx/lib" />
+	<!-- relative paths -->
+	<property name="src" location="src"/>
+	<property name="lib" location="lib"/>
+	<property name="bin" location="bin"/>	
+	<property name="apidoc" location="apidoc" />
+	<!-- used for running Windows commands --> 
+	<property name="comspec" location="${env.ComSpec}"/>
+	<property name="cdrive" location="${env.USERPROFILE}"/> 
+	<!-- Rhythmyx classpath  --> 
+	<path id="rx.class.path"> 
+		 <fileset dir="${rhino.lib}">
+		 	<include name="**.jar"/>
+		 	<exclude name="${jarname}"/>
+		 </fileset>		    	
+		 <fileset dir="${jboss.lib}" /> 
+	</path>
+	
+
+	<target name="init">
+		<!-- Create the time stamp -->
+		<tstamp/>
+	</target>
+	
+	
+	<target name="compile" description="compile the source ">
+		<!-- Compile the java code from ${src} into ${bin} -->
+		<javac srcdir="${src}" destdir="${bin}" debug="true" source="1.5" classpathref="rx.class.path" />
+		<copy todir="${bin}">
+    		<fileset dir="${src}">
+      			<include name="**/*.xml"/>
+    			<include name="**/*.properties" />
+    		</fileset>
+  		</copy>
+	</target>
+	
+	<target name="javadoc" depends="compile">
+		<mkdir dir="apidoc"/>
+		<javadoc destdir="apidoc" private="true" use="yes" 
+		windowtitle="${ant.project.name}">
+			<packageset dir="${src}" defaultexcludes="yes">
+				<include name="com/percussion/pso/**"/>	
+			</packageset>
+			<classpath refid="rx.class.path"/>
+		</javadoc>
+	</target>
+	
+	<target name="jarbuilder" description="just build the jar, no server">
+	    <delete file="${bin}/log4j.properties" />
+		<propertyfile file="${bin}/build.properties">
+			<entry key="build.number" value="${build.number}"/>
+			<entry key="build.date" type="date" pattern="EEEE MMM dd yyyy" value="now"/>
+    	</propertyfile>
+		<jar jarfile="${jarname}" basedir="bin">
+			<include name="org/**" />
+			<include name="javax/**" />	
+			<include name="com/percussion/pso/**"/>
+			<exclude name="log4j.properties" /> 
+			<include name="build.properties" /> 
+			<include name="readme.txt" />
+		</jar>
+	</target>
+	
+	<target name="testbuild" depends="compile" description="build for local test">		
+		<echo>Stopping ${rhino.service}</echo>
+		<exec executable="net.exe" failonerror="false">
+			<arg line="stop ${rhino.service}"/>
+			<env key="COMSPEC" path="${comspec}"/>
+		</exec>
+		<property name="build.number" value="test build" /> 
+		<antcall target="jarbuilder"/>
+		<copy file="${jarname}" todir="${rhino.lib}" />
+		<echo>waiting for shutdown...</echo>
+	    <sleep seconds="15" /> 
+		<echo>Restarting ${rhino.service}</echo>
+		<exec executable="net.exe" failonerror="true">
+			<arg line="start ${rhino.service}"/>
+			<env key="COMSPEC" path="${comspec}"/>
+		</exec>
+	</target>
+	<target name="dist" depends="init,compile" description="generate the distribution">
+		<buildnumber/>
+		<antcall target="jarbuilder"/>
+		<zip destfile="${distfile}">						
+			<zipfileset dir="." includes="${jarname}" />
+			<zipfileset dir="Rx_Resources_Ephox/rx_resources/ephox" includes="**.*" prefix="Rx_Resources_Ephox/rx_resources/ephox"/>
+			<zipfileset dir="Rx_Resources_Ephox/rx_resources/stylesheets" includes="**.*" prefix="Rx_Resources_Ephox/rx_resources/stylesheets"/>
+			<fileset dir="." includes="readme.txt, build.number" />
+			<fileset dir="." includes="deploy.xml *.xslt"/>
+			<fileset dir="." includes="Extensions.xml InstallExtensions.bat InstallExtensions.sh" />
+			<zipfileset dir="${apidoc}" prefix="javadoc"/>			
+			<!--<fileset dir="Rhythmyx" includes="**"/>-->
+		</zip>
+			
+	</target>
+	<target name="clean" description="clean up">
+		<delete dir="${bin}"/>
+		<mkdir dir="${bin}"/>
+	</target>
+</project>
