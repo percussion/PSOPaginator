@@ -1,0 +1,85 @@
+<project name="ScrippsPaginator" default="deploy" basedir=".">
+	<description>
+       Scripps Paginator code
+    </description>
+	<!-- set global properties for this build -->
+    
+	<property environment="env"/>
+	<!-- base directory of Rhythmyx installation --> 
+	<property name="RHYTHMYX.home" location="${env.RHYTHMYX_HOME}"/>
+	<!-- name of Rhythmyx Service -->
+	<property name="RHYTHMYX.service" value="${env.RHYTHMYX_SERVICE}"/>
+	<!-- base of Axis Path -->
+	<property name="axis_home" location="${env.AXIS_HOME}"/> 
+	<!-- name of our output jar --> 
+	<property name="jarname" value="PSOPaginator.jar" />	
+
+	<!-- Spring configuration for ContentListServlet -->
+<!--	<property name="spring.contentlist" value="paginatorContentListServlet.xml"/>-->
+	
+	<!-- XSL stylesheet to add property -->
+	<property name="stylesheet" value="addProp.xslt"/>
+	
+	<property name="RHYTHMYX.lib" 
+	value="${RHYTHMYX.home}/AppServer/server/rx/deploy/rxapp.ear/rxapp.war/WEB-INF/lib"/>
+	<property name="RHYTHMYX.spring"
+	value="${RHYTHMYX.home}/AppServer/server/rx/deploy/rxapp.ear/rxapp.war/WEB-INF/config/user/spring"/>
+	
+	<!-- used for running Windows commands --> 
+	<property name="comspec" location="${env.ComSpec}"/>
+	<property name="cdrive" location="${env.USERPROFILE}"/> 
+	
+	<target name="init">
+		<!-- Create the time stamp -->
+		<tstamp/>
+	</target>
+	
+	<target name="deploy" description="deploys the files to the correct locations">
+		<echo>Deploying all paginator files</echo>
+		<move file="${jarname}" todir="${RHYTHMYX.lib}" />
+		<echo>Installing Extension</echo>
+		<antcall target="installExtensions"/>
+<!--		<move file="spring/${spring.contentlist}" todir="${RHYTHMYX.spring}" /> -->
+		<copy todir="${RHYTHMYX.home}/" overwrite="true">
+		      <fileset dir="Rx_Resources_Ephox/">
+		        <include name="**/*.*"/>
+		      </fileset>
+       	</copy>
+       	<antcall target="addProperty"/>
+       	<echo>Deleting all remaining extraneous files</echo>
+       	<delete dir="spring"/>
+       	<delete dir="Rx_Resources_Ephox"/>
+       	<delete file="deploy.xml"/>
+       	<delete file="Extensions.xml"/>
+		<delete file="Paginator.tar"/>
+   		<echo>Deployment complete</echo>
+	</target>
+	
+	<target name="addProperty" description="adds the necessary property to the UserDispatcher-servlet and copies the new file">
+		<echo>Transforming UserDispatcher-servlet</echo>
+		<copy file="${RHYTHMYX.spring}/UserDispatcher-servlet.xml" todir=""/>
+		<xslt in="UserDispatcher-servlet.xml" style="${stylesheet}" out="Output.xml" force="yes" />
+		<echo>Deleted extraneous files</echo>
+		<delete file="${stylesheet}"/>
+		<delete file="UserDispatcher-servlet.xml"/>
+		<echo>Updated UserDispatcher-servlet.xml</echo>
+		<move file="Output.xml" tofile="UserDispatcher-servlet.xml" />
+		<move file="UserDispatcher-servlet.xml" todir="${RHYTHMYX.spring}" />
+	</target>
+
+	<target name="installExtensions">
+	    <fail unless="RHYTHMYX.home" message="You must set the RHYTHMYX_HOME environment variable" />
+		<java classname="com.percussion.util.PSExtensionInstallTool" fork="true">
+		    <arg value="${RHYTHMYX.home}" />
+			<arg value="${basedir}" />
+			<classpath>
+				<fileset dir="${RHYTHMYX.lib}"/>
+			    <fileset dir="${RHYTHMYX.home}/AppServer/lib/endorsed" />
+				<fileset dir="${RHYTHMYX.home}/AppServer/server/rx/lib" />
+			</classpath>			
+		</java>     
+	</target>
+
+	<target name="dist" depends="init" description="default">
+	</target>
+</project>
