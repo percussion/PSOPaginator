@@ -56,7 +56,8 @@ public class Paginator extends PSJexlUtilBase implements IPSJexlExpression
 	    {
 	    	try
 	    	{
-	    		InputSource in = createInputStreamXML(fieldContent);
+	    		InputSource in = createInputStreamXML(wrapString(fieldContent));
+
 	    		int pageCount = HTMLPageCounter.getCount(in);	    		
 	    		return String.valueOf(pageCount);
 	       	} 
@@ -78,9 +79,9 @@ public class Paginator extends PSJexlUtilBase implements IPSJexlExpression
 		}
     	try
     	{
-    		InputSource in = createInputStreamXML(fieldContent);    		
+    		InputSource in = createInputStreamXML(wrapString(fieldContent));    		
     		String pageHTML = HTMLPaginator.getHTMLPage(in, Integer.parseInt(pageNumber));
-    		return pageHTML;
+    		return unwrapString(pageHTML);
        	}
     	catch (Exception e)
        {
@@ -107,6 +108,30 @@ public class Paginator extends PSJexlUtilBase implements IPSJexlExpression
     		return null;
     	}
     }
+    
+    private static String wrapString(String in)
+    {
+       StringBuilder builder = new StringBuilder();
+       builder.append(DIV_START);
+       builder.append(in); 
+       builder.append(DIV_END); 
+       return builder.toString(); 
+    }
+
+    private static String unwrapString(String in)
+    {
+       String temp = in;
+       if(in.startsWith(DIV_START) && in.endsWith(DIV_END))          
+       {
+          int len = in.length(); 
+          int endindex = len - DIV_END.length(); 
+          temp = in.substring(DIV_START.length(), endindex);
+       }
+       return temp; 
+    }
+    
+    private static final String DIV_START = "<div>";
+    private static final String DIV_END = "</div>"; 
   }
 
-
+  
