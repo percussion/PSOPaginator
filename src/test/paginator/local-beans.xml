@@ -1,0 +1,14 @@
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" 
+"http://www.springframework.org/dtd/spring-beans.dtd">
+<beans>
+ <!-- This file must exist for unit testing.  It must be in the ./ear/config/spring directory -->
+ <bean id="guidmanager" singleton="true"
+      class="test.paginator.MockGuidManager">
+ </bean>
+ 
+ <bean id="assemblyService" singleton="true"
+      class="test.paginator.MockAssemblyService">
+ </bean>
+ 
+ 
+</beans>

@@ -1,6 +1,6 @@
-<project name="ScrippsPaginator" default="dist" basedir=".">
+<project name="PSO Paginator" default="dist" basedir=".">
 	<description>
-       Scripps Paginator code
+       PSO Paginator code
     </description>
 	<!-- set global properties for this build -->
     
@@ -39,6 +39,7 @@
 		 	<include name="**.jar"/>
 		 	<exclude name="${jarname}"/>
 		 </fileset>		    	
+		 <fileset dir="${lib}" /> 
 		 <fileset dir="${jboss.lib}" /> 
 	</path>
 	
@@ -95,9 +96,14 @@
 		</exec>
 		<property name="build.number" value="test build" /> 
 		<antcall target="jarbuilder"/>
-		<copy file="${jarname}" todir="${rx.lib}" />
+		<copy file="${jarname}" todir="${rx.lib}" verbose="true" />
+		<copy file="${lib}/PSOToolkit60.jar" todir="${rx.lib}" verbose="true" />
+		<copy todir="${rx.spring}" verbose="true">
+			<fileset dir="spring" />
+		</copy>
 		<echo>waiting for shutdown...</echo>
 	    <sleep seconds="15" /> 
+		<delete file="${rx.home}/AppServer/server/rx/log/server.log" />
 		<echo>Restarting ${rx.service}</echo>
 		<exec executable="net.exe" failonerror="true">
 			<arg line="start ${rx.service}"/>
@@ -109,6 +115,7 @@
 		<antcall target="jarbuilder"/>
 		<zip destfile="${distfile}">						
 			<zipfileset dir="." includes="${jarname}" />
+			<zipfileset dir="${lib}" includes="PSOToolkit60.jar" prefix="lib" />
 			<zipfileset dir="Rx_Resources_Ephox/rx_resources/ephox" includes="**.*" 
 				prefix="Rx_Resources_Ephox/rx_resources/ephox"/>
 			
@@ -117,6 +124,7 @@
 			
 			<zipfileset dir="Rx_Resources_Ephox/rx_resources/stylesheets" includes="**.*" 
 				prefix="Rx_Resources_Ephox/rx_resources/stylesheets"/>
+			<zipfileset dir="spring"  prefix="spring" />
 			<fileset dir="." includes="readme.txt, build.number" />
 			<fileset dir="." includes="deploy.xml *.xslt"/>
 			<fileset dir="." includes="Extensions.xml InstallExtensions.bat InstallExtensions.sh" />

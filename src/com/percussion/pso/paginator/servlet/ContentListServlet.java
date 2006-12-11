@@ -1,4 +1,4 @@
-package com.percussion.pso.paginator;
+package com.percussion.pso.paginator.servlet;
 
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -7,22 +7,21 @@ import java.io.StringWriter;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List; 
+import java.util.List;
 import java.util.Map;
-
 import javax.servlet.ServletException;
-import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.xml.stream.XMLOutputFactory;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
-
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-
+import org.springframework.web.servlet.ModelAndView;
+import org.springframework.web.servlet.mvc.AbstractController;
 import com.percussion.cms.objectstore.PSComponentSummary;
+import com.percussion.server.PSRequestParsingException;
 import com.percussion.server.PSServer;
 import com.percussion.services.assembly.IPSAssemblyService;
 import com.percussion.services.assembly.IPSAssemblyTemplate;
@@ -40,7 +39,6 @@ import com.percussion.services.publisher.IPSPublisherService;
 import com.percussion.services.publisher.IPSPublisherServiceErrors;
 import com.percussion.services.publisher.PSPublisherException;
 import com.percussion.services.publisher.PSPublisherServiceLocator;
-import com.percussion.services.publisher.data.PSContentListItem;
 import com.percussion.util.IPSHtmlParameters;
 import com.percussion.util.PSUrlUtils;
 import com.percussion.utils.exceptions.PSExceptionHelper;
@@ -48,13 +46,19 @@ import com.percussion.utils.guid.IPSGuid;
 import com.percussion.utils.timing.PSStopwatch;
 
 
-public class ContentListServlet extends HttpServlet {
+public class ContentListServlet extends AbstractController {
     
     /**
      * Cache region in use
      */
     private static final String ms_region = "contentlist";
 
+    private static IPSPublisherService pub = null;
+    
+    private static IPSCmsObjectMgr cms = null;
+    
+    private static IPSAssemblyService asm = null;  
+    
     private static Log log = LogFactory.getLog(ContentListServlet.class);
 
     /**
@@ -62,12 +66,22 @@ public class ContentListServlet extends HttpServlet {
      */
     private static final SimpleDateFormat ms_datefmt = new SimpleDateFormat(
           "yyyy-MM-dd HH:mm:ss");
-
     /**
      * 
      */
-    private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 1289502L;
 
+    private IPSPageExpander pageExpander = null;
+    
+    protected static void initStatics()
+    {
+       if(asm == null)
+       {
+       pub = PSPublisherServiceLocator.getPublisherService();       
+       cms = PSCmsObjectMgrLocator.getObjectManager();       
+       asm = PSAssemblyServiceLocator.getAssemblyService();
+       }
+    }
     /*
      * (non-Javadoc)
      * 
@@ -76,18 +90,13 @@ public class ContentListServlet extends HttpServlet {
      */
     @SuppressWarnings("unchecked")
     @Override
-    protected void service(HttpServletRequest request, HttpServletResponse response) 
+    protected ModelAndView handleRequestInternal(HttpServletRequest request, HttpServletResponse response) 
     throws ServletException, IOException {
-        /*
-         * Check if the pageno variable is set.
-         */
-        log.debug("Pageno variable is " + this.getHttpParamPageNo());
-        
-        IPSPublisherService pub = PSPublisherServiceLocator.getPublisherService();
+       
+        initStatics();
         IPSCacheAccess cache = PSCacheAccessLocator.getCacheAccess();
         PSStopwatch sw = new PSStopwatch();
         sw.start();
-        IPSCmsObjectMgr cms = PSCmsObjectMgrLocator.getObjectManager();
         String siteid = request.getParameter(IPSHtmlParameters.SYS_SITEID);
         String delivery = request
               .getParameter(IPSHtmlParameters.SYS_DELIVERYTYPE);
@@ -108,7 +117,7 @@ public class ContentListServlet extends HttpServlet {
         String host = request.getParameter(IPSHtmlParameters.SYS_HOST);
         String protocol = request.getParameter(IPSHtmlParameters.SYS_PROTOCOL);
         String portstr = request.getParameter(IPSHtmlParameters.SYS_PORT);
-        IPSAssemblyService asm = PSAssemblyServiceLocator.getAssemblyService();
+       
         int port = 0;
         if (!StringUtils.isBlank(portstr))
         {
@@ -150,16 +159,16 @@ public class ContentListServlet extends HttpServlet {
            {
               overrides.put("siteid", siteid);
            }
-           List<PSContentListItem> items = null;
+           List<IPSContentListItem> items = null;
            if (maxresults > 0 && !StringUtils.isBlank(publicationid))
            {
-              items = (List<PSContentListItem>) cache.get(publicationid, ms_region);
+              items = (List<IPSContentListItem>) cache.get(publicationid, ms_region);
            }
 
            if (items == null)
            {
-              items = pub.executeContentList(list, overrides, publish, 
-                    Integer.parseInt(context));
+              items = PSContentListItemExtended.wrapContentList(pub.executeContentList(list, overrides, publish, 
+                    Integer.parseInt(context)),  list.getFilter(), publish, publicationid);
               if (!StringUtils.isBlank(publicationid) && maxresults > 0)
               {
                     cache.save(publicationid, (Serializable) items, ms_region);
@@ -179,11 +188,16 @@ public class ContentListServlet extends HttpServlet {
               }
               items = items.subList(start, end);
            }
-
-           for (PSContentListItem item : items)
+           if(pageExpander != null)
            {
-              formatContentListItem(pub, cms, asm, f, icontext, host, protocol,
-                    port, publish, list, item);
+              items = pageExpander.expand(items); 
+           }
+           
+           
+           for (IPSContentListItem item : items)
+           {
+              formatContentListItem( f,  host, protocol,
+                    port, list, item);
            }
            f.writeCharacters("\n");
            if (maxresults > 0)
@@ -246,6 +260,7 @@ public class ContentListServlet extends HttpServlet {
               throw new RuntimeException(e1);
            }
         }
+        return null;
     }
     
     /**
@@ -267,12 +282,12 @@ public class ContentListServlet extends HttpServlet {
      * @throws XMLStreamException
      * @throws PSPublisherException
      * @throws PSAssemblyException
+    * @throws PSRequestParsingException 
      */
-    protected void formatContentListItem(IPSPublisherService pub,
-          IPSCmsObjectMgr cms, IPSAssemblyService asm,
-          XMLStreamWriter formatter, int context, String host, String protocol,
-          int port, boolean publish, IPSContentList list, PSContentListItem item)
-          throws XMLStreamException, PSPublisherException, PSAssemblyException
+    protected void formatContentListItem(
+          XMLStreamWriter formatter,  String host, String protocol,
+          int port, IPSContentList list, IPSContentListItem item)
+          throws XMLStreamException, PSPublisherException, PSAssemblyException, PSRequestParsingException
     {
        if (pub == null)
        {
@@ -313,11 +328,9 @@ public class ContentListServlet extends HttpServlet {
              port = PSServer.getSslListenerPort();
           }
        }
-       /*
-        * Get the number of pages 
-        */
-       List<Integer> ids = new ArrayList<Integer>();
+
        PSLegacyGuid cid = (PSLegacyGuid) item.getContentId();
+       List<Integer> ids = new ArrayList<Integer>();
        ids.add(new Integer(cid.getContentId()));
        PSComponentSummary s = cms.loadComponentSummaries(ids).get(0);
        String tid = Long.toString(item.getTemplateId().longValue());
@@ -330,51 +343,16 @@ public class ContentListServlet extends HttpServlet {
        
        IPSAssemblyTemplate template = asm.loadTemplate(new PSGuid(
                PSTypeEnum.TEMPLATE, tid), false);
-         String url = pub.constructAssemblyUrl(host, port, protocol, item
-               .getSiteId(), item.getContentId(), folderguid, template, list
-               .getFilter(), context, publish);
-         
-       int total_pages = pageNoFromLocation(item.getLocation());
-       
-       if (total_pages != -1) {
-            for (int page = 1; page <= total_pages; page++) {
-
-                log.debug("Pageno: " + page);
-                log.debug("Old Assembly url: " + url);
-                url = url + "&" + this.getHttpParamPageNo() + "=" + page;
-                log.debug("New Assembly url: " + url);
-                formatContentListItem(url, createNewLocation(
-                        item.getLocation(), page), formatter, publish, s, item);
-            }
-        } else {
-            log.debug("Item is not paginated: location = " + item.getLocation());
-            formatContentListItem(url, item.getLocation(), formatter, publish, s, item);
-        }
-           
-
-    }
-    
-    /**
-     * Helper method for the real formatContentListItem
-     * 
-     * @param url
-     * @param location
-     * @param formatter
-     * @param publish
-     * @param s
-     * @param item
-     * @throws XMLStreamException
-     */
-    private void formatContentListItem(String url, String location, XMLStreamWriter formatter, 
-            boolean publish, PSComponentSummary s, PSContentListItem item)
-            throws XMLStreamException {
+       String baseURL = pub.constructAssemblyUrl(host, port, protocol, item.getSiteId(), 
+             item.getContentId(), folderguid, template, item.getFilter(),
+               item.getContext(), item.isPublish());
+        item.setAssemblyURL(baseURL);
         formatter.writeCharacters("\n  ");
         formatter.writeStartElement("contentitem");
-        PSLegacyGuid cid = (PSLegacyGuid) item.getContentId();
         formatter.writeAttribute("contentid", Integer
               .toString(cid.getContentId()));
         formatter.writeAttribute("revision", Integer.toString(cid.getRevision()));
-        formatter.writeAttribute("unpublish", publish ? "no" : "yes");
+        formatter.writeAttribute("unpublish", item.isPublish() ? "no" : "yes");
         formatter.writeAttribute("variantid", Long.toString(item.getTemplateId()
               .longValue()));
         formatter.writeCharacters("\n    ");
@@ -386,14 +364,14 @@ public class ContentListServlet extends HttpServlet {
         formatter.writeCharacters("\n    ");
         formatter.writeStartElement("contenturl");
 
-        formatter.writeCharacters(url);
+        formatter.writeCharacters(item.getAssemblyURL());
         formatter.writeEndElement();
         formatter.writeCharacters("\n    ");
         formatter.writeStartElement("delivery");
         formatter.writeCharacters("\n      ");
         formatter.writeStartElement("location");
 
-        formatter.writeCharacters(location);
+        formatter.writeCharacters(item.getLocation());
         formatter.writeEndElement();
         formatter.writeEndElement();
         formatter.writeCharacters("\n    ");
@@ -415,6 +393,22 @@ public class ContentListServlet extends HttpServlet {
     }
     
     /**
+    * @return Returns the pageExpander.
+    */
+   public IPSPageExpander getPageExpander()
+   {
+      return pageExpander;
+   }
+
+   /**
+    * @param pageExpander The pageExpander to set.
+    */
+   public void setPageExpander(IPSPageExpander pageExpander)
+   {
+      this.pageExpander = pageExpander;
+   }
+
+   /**
      * Begin the output content list document
      * 
      * @param delivery
@@ -437,47 +431,6 @@ public class ContentListServlet extends HttpServlet {
     }
     
     /**
-     * Parses the location for the total number of pages.
-     * The format of the location string should be 
-     * "xxx_n.xxx" or "xxxxxx_n" where n is a digit.
-     * 
-     * @param location
-     * @return number of pages, -1 if n is not found, never null.  
-     */
-    public int pageNoFromLocation(String location) {
-        String basename = StringUtils.substringBeforeLast(location,".");
-        String pageno = StringUtils.substringAfterLast(basename, "_");
-        if (StringUtils.isNotBlank(pageno) && StringUtils.isNumeric(pageno)) {
-            return Integer.parseInt(pageno);
-        } else {
-            return -1;
-        }
-    }
-    
-    /**
-     * Takes the old location and creates a new location with the given page number.
-     * 
-     * @param location, should not be null.
-     * @param pageno
-     * @return location, never null
-     */
-    public String createNewLocation(String location, int pageno) {
-        String basename = StringUtils.substringBeforeLast(location,".");
-        String ext = StringUtils.substringAfterLast(location, ".");
-        String old_pageno = StringUtils.substringAfterLast(basename, "_");
-        String prefix = StringUtils.substringBeforeLast(basename,"_");
-        if (StringUtils.isNotBlank(old_pageno) && StringUtils.isNumeric(old_pageno)) {
-            if (StringUtils.isNotBlank(ext)) {
-                return prefix + "_" + pageno + "." + ext;
-            } else {
-                return prefix + "_" + pageno;
-            }
-        } else {
-            return location;
-        }
-    }
-    
-    /**
      * Validate that the passed parameter value is not <code>null</code> or
      * empty.
      * 
@@ -493,34 +446,27 @@ public class ContentListServlet extends HttpServlet {
                 + " is a required parameter");
        }
     }
-    
-
-    private String httpParamPageNo;
-
-    /**
-     * The HTTP parameter name to be passed to the assembly template to specify which 
-     * page to render
-     * 
-     * @return The parameter name (if not setup correctly with spring it maybe null)
-     */
-    public String getHttpParamPageNo() {
-        if (httpParamPageNo == null) {
-            httpParamPageNo = getServletConfig().getInitParameter("httpParamPageNo");
-        }
-        return httpParamPageNo;
-    }
-
-    /**
-     * Sets the HTTP parameter name for page number 
-     * to be passed to the assembly template.
-     * 
-     * @param httpParamPageNo
-     */
-    public void setHttpParamPageNo(String httpParamPageNo) {
-        this.httpParamPageNo = httpParamPageNo;
-    }
-    
-    
-    
-
+   /**
+    * @param asm The asm to set.
+    */
+   public static void setAsm(IPSAssemblyService asm)
+   {
+      log.info("Setting Assembly Service");
+      ContentListServlet.asm = asm;
+   }
+   /**
+    * @param cms The cms to set.
+    */
+   public static void setCms(IPSCmsObjectMgr cms)
+   {
+      ContentListServlet.cms = cms;
+   }
+   /**
+    * @param pub The pub to set.
+    */
+   public static void setPub(IPSPublisherService pub)
+   {
+      ContentListServlet.pub = pub;
+   }
+  
 }

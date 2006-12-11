@@ -72,7 +72,7 @@ public class HTMLPaginator extends DefaultHandler
         {        	        	
          	while ( !htmlTags.empty()  )
         	{        		
-        		HTMLTag h = (HTMLTag) htmlTags.pop();
+        		HTMLTag h = htmlTags.pop();
         		
         		// First condition is for text nodes 
         		// Second is for all the tags opened before or during current page being

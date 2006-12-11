@@ -1,0 +1,45 @@
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" 
+"http://www.springframework.org/dtd/spring-beans.dtd">
+<beans>
+   <bean id="paginatorUrlMapping" class="org.springframework.web.servlet.handler.SimpleUrlHandlerMapping" abstract="false" singleton="true" lazy-init="default" autowire="default" dependency-check="default">
+      <property name="mappings">
+         <props>
+              <!-- keep same name for compatibility -->
+              <prop key="paginator/contentlist.htm">paginatorLocationController</prop>
+              <prop key="paginator/templateclist.xml">paginatorTemplateController</prop>
+         </props>
+      </property>
+      </bean>
+          
+    <bean id="paginatorLocationController"
+		class="com.percussion.pso.paginator.servlet.ContentListServlet">
+	    <property name="pageExpander">
+	    	<ref bean="locationPageExpander" />
+	    </property>
+    </bean>
+
+    <bean id="paginatorTemplateController"
+		class="com.percussion.pso.paginator.servlet.ContentListServlet">
+	    <property name="pageExpander">
+	    	<ref bean="templatePageExpander" />
+	    </property>	  
+    </bean>
+    
+    <bean id="locationPageExpander" 
+       class="com.percussion.pso.paginator.servlet.PSLocationPageExpander">
+       <property name="pageParamName">
+           <value>pageno</value>
+       </property>  
+    </bean>
+    
+    <bean id="templatePageExpander" 
+       class="com.percussion.pso.paginator.servlet.PSTemplatePageExpander">
+       <property name="pageCountParameterName">
+          <value>pagecount</value>
+       </property>
+       <!-- Note: this is a JEXL expression, and must begin with a $ -->
+       <property name="pageCountBindingName">
+          <value>$pagecount</value>
+       </property>
+    </bean>
+</beans>
