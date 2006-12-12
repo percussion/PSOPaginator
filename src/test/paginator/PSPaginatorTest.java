@@ -75,7 +75,7 @@ public class PSPaginatorTest extends MockObjectTestCase
    public void testGetBodyPageCount()
    {
       String body = "<div>Page1<?pageBreak ?>Page2<?pageBreak ?>Page3</div>"; 
-      int count = paginator.getBodyPageCount(body); 
+      Number count = paginator.getBodyPageCount(body); 
       assertEquals(3,count); 
       body = "<p>Page1<?pageBreak ?>Page2</p><h1>Title</h1>"; 
       count = paginator.getBodyPageCount(body); 
@@ -145,7 +145,7 @@ public class PSPaginatorTest extends MockObjectTestCase
       
       try
       {
-         int pages = paginator.getSlotPageCountN(item, slotName, params, 10L);
+         Number pages = paginator.getSlotPageCountN(item, slotName, params, 10L);
          log.info("Pages = " + pages); 
          assertEquals(1,pages);
          

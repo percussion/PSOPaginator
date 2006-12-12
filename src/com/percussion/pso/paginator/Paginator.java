@@ -72,7 +72,7 @@ public class Paginator extends PSJexlUtilBase implements IPSJexlExpression
    
    @IPSJexlMethod(description="Count the number of page breaks", params={
 		   @IPSJexlParam(name="fieldContent", description="Page content") } ) 
-	    public int getBodyPageCount(String fieldContent)
+	    public Number getBodyPageCount(String fieldContent)
 	    {
 	    	try
 	    	{
@@ -107,7 +107,7 @@ public class Paginator extends PSJexlUtilBase implements IPSJexlExpression
           @IPSJexlParam(name="pageNumber", description="Page number") }) 
     public String getBodyPage(String fieldContent, String pageNumber)
     {       
-       Long pno = new Long(0); 
+       Number pno = new Long(0); 
        if(StringUtils.isNotBlank(pageNumber))
        {
           if(!StringUtils.isNumeric(pageNumber))
@@ -124,9 +124,9 @@ public class Paginator extends PSJexlUtilBase implements IPSJexlExpression
     @IPSJexlMethod(description="Get content from specified page number", params={
           @IPSJexlParam(name="fieldContent", description="Page content"),
           @IPSJexlParam(name="pageNumber", description="Page number") }) 
-    public String getBodyPageN(String fieldContent, Long pageNumber)
+    public String getBodyPageN(String fieldContent, Number pageNumber)
     {
-        if (pageNumber == null || pageNumber == 0 )
+        if (pageNumber == null || pageNumber.intValue() == 0 )
         {
             return fieldContent;
         }
@@ -231,15 +231,15 @@ public class Paginator extends PSJexlUtilBase implements IPSJexlExpression
           @IPSJexlParam(name="slot", description="slot to paginate"),
           @IPSJexlParam(name="params", description="assembly parameters for slot"), 
           @IPSJexlParam(name="pageSize", description="number of items per page") }) 
-    public int getSlotPageCount(IPSAssemblyItem item, String slot,
+    public Number getSlotPageCount(IPSAssemblyItem item, String slot,
           Map<String,Object> params, String pageSize) throws Throwable
        {
        if(StringUtils.isBlank(pageSize))
           {
           log.debug("page size is blank");
-          return 0; 
+          return new Integer(0); 
           }
-       long pagesz = Long.parseLong(pageSize); 
+       Number pagesz = new Integer(pageSize); 
        return getSlotPageCountN(item, slot, params, pagesz); 
        }
 
@@ -248,11 +248,21 @@ public class Paginator extends PSJexlUtilBase implements IPSJexlExpression
           @IPSJexlParam(name="slot", description="slot to paginate"),
           @IPSJexlParam(name="params", description="assembly parameters for slot"), 
           @IPSJexlParam(name="pageSize", description="number of items per page") }) 
-    public int getSlotPageCountN(IPSAssemblyItem item, String slot,
-          Map<String,Object> params, Long pageSize) throws Throwable
+    public Number  getSlotPageCountN(IPSAssemblyItem item, String slot,
+          Map<String,Object> params, Number pageSize) throws Throwable
     {
       
-       if(pageSize <= 0 || pageSize > Integer.MAX_VALUE)
+       int pagesz; 
+       if(pageSize == null)
+       {
+          String emsg = "page size must not be null"; 
+          log.error(emsg);
+          throw new IllegalArgumentException(emsg);
+       }
+      
+       pagesz = pageSize.intValue(); 
+       
+       if(pagesz <= 0)
        {
           String emsg = "page size must be a positive number";
           log.error(emsg);
@@ -267,11 +277,11 @@ public class Paginator extends PSJexlUtilBase implements IPSJexlExpression
        log.trace("item count " + icount); 
        if( icount <= psize)
        {
-          return 1; 
+          return new Integer(1); 
        }
        int pgcount = ((icount-1)/psize)+1;
        log.trace("page count " + pgcount); 
-       return pgcount;  
+       return new Integer(pgcount);  
     }
     @IPSJexlMethod(description="create the list of locations", params={
           @IPSJexlParam(name="location", description="base location for item"),
@@ -293,6 +303,14 @@ public class Paginator extends PSJexlUtilBase implements IPSJexlExpression
           }
        }
        return PaginatorUtils.createLocationList(location, pagect); 
+    }
+    
+    @IPSJexlMethod(description="create the list of locations", params={
+          @IPSJexlParam(name="location", description="base location for item"),
+          @IPSJexlParam(name="pagecount", description="number of pages") }) 
+    public List<String> createLocationListN(String location, Number pagecount)
+    {
+       return PaginatorUtils.createLocationList(location, pagecount.intValue()); 
     }
     /*
      *  To create an Input source for the SAX parser
