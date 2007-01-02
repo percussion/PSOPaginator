@@ -69,7 +69,7 @@ public class PSTemplatePageExpander extends PSAbstractPageExpander
       if(pageCount == null)
       {
          log.warn("Unable to count pages. Binding " + getPageCountBindingName() + " is null");
-         return 1;
+         return -1;
       }
       log.trace("pageCount is " + pageCount ); 
       if(pageCount instanceof Number)
@@ -82,7 +82,7 @@ public class PSTemplatePageExpander extends PSAbstractPageExpander
       if(StringUtils.isBlank(pageStr) || !StringUtils.isNumeric(pageStr))
       {
          log.warn("Page count binding must be numeric - found " + pageStr);
-         return 1; 
+         return -1; 
       }
       log.trace("Page count as String:" + pageStr); 
       int pageInt = Integer.parseInt(pageStr); 

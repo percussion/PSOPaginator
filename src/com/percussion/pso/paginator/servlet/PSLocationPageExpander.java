@@ -32,12 +32,10 @@ public class PSLocationPageExpander extends PSAbstractPageExpander implements IP
    }
   
    /**
-    * Parses the location for the total number of pages.
-    * The format of the location string should be 
-    * "xxx_n.xxx" or "xxxxxx_n" where n is a digit.
-    * 
-    * @param location
-    * @return number of pages, -1 if n is not found, never null.  
+    * Counts the total number of pages for this item.
+    * @param item the item to count. 
+    *
+    * @return number of pages, -1 if n is not found.   
     */
    @Override
    protected int countPages(IPSContentListItem item) 

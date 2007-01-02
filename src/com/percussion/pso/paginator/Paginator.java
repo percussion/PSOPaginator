@@ -56,12 +56,21 @@ public class Paginator extends PSJexlUtilBase implements IPSJexlExpression
         asm = PSAssemblyServiceLocator.getAssemblyService();
    }
    /**
-    * 
+    * Default constructor.
     */
    public Paginator()
    {
       
    }
+   
+   /**
+    * Counts the number of pages in a body field.  The page breaks will be 
+    * one more than the number of pages, so a field with 1 page break is
+    * published as 2 pages. 
+    * @deprecated use getBodyPageCount() instead.
+    * @param fieldContent
+    * @return the page count.
+    */
    @IPSJexlMethod(description="Count the number of page breaks", params={
            @IPSJexlParam(name="fieldContent", description="Page content") } )
            @Deprecated
@@ -70,6 +79,14 @@ public class Paginator extends PSJexlUtilBase implements IPSJexlExpression
             return String.valueOf(getBodyPageCount(fieldContent)); 
         }
    
+   /**
+    * Counts the number of pages in a body field.  The page breaks will be 
+    * one more than the number of pages, so a field with 1 page break is
+    * published as 2 pages. 
+    * 
+    * @param fieldContent the field content
+    * @return the page count.
+    */
    @IPSJexlMethod(description="Count the number of page breaks", params={
 		   @IPSJexlParam(name="fieldContent", description="Page content") } ) 
 	    public Number getBodyPageCount(String fieldContent)
@@ -88,6 +105,13 @@ public class Paginator extends PSJexlUtilBase implements IPSJexlExpression
 	       }
 	    }
    
+    /**
+     * Gets the specified page.
+     * @deprecated use the getBodyPage instead
+     * @param fieldContent the field content. 
+     * @param pageNumber the page number. 
+     * @return the body page. Never <code>null</code>
+     */
     @IPSJexlMethod(description="Get content from specified page number", params={
           @IPSJexlParam(name="fieldContent", description="Page content"),
           @IPSJexlParam(name="pageNumber", description="Page number") })
@@ -102,6 +126,13 @@ public class Paginator extends PSJexlUtilBase implements IPSJexlExpression
     	 
     }
     
+    /**
+     * Convenience method for getBodyPageN.  Used when the page number
+     * parameter is available as a <code>String</code>
+     * @param fieldContent the body field contents
+     * @param pageNumber the page number. Must be numeric and greater than 0. 
+     * @return the body page. Never <code>null</code>
+     */
     @IPSJexlMethod(description="Get content from specified page number", params={
           @IPSJexlParam(name="fieldContent", description="Page content"),
           @IPSJexlParam(name="pageNumber", description="Page number") }) 
@@ -121,6 +152,13 @@ public class Paginator extends PSJexlUtilBase implements IPSJexlExpression
        return getBodyPageN(fieldContent,pno);
     }
     
+    /**
+     * Gets the specified page.  
+     * @param fieldContent the contents of the body field. 
+     * @param pageNumber the page number to retrieve. Must not be 
+     * <code>null</code>.  Must be greater than zero.  
+     * @return the body page. Never <code>null</code>
+     */
     @IPSJexlMethod(description="Get content from specified page number", params={
           @IPSJexlParam(name="fieldContent", description="Page content"),
           @IPSJexlParam(name="pageNumber", description="Page number") }) 
@@ -144,6 +182,19 @@ public class Paginator extends PSJexlUtilBase implements IPSJexlExpression
          
     }
 
+    /**
+     * Convenience method for getSlotPageN.  
+     * Gets the contents of the slot paginated. 
+     * @param item the parent item which contains the slot.  Usually
+     * <code>$sys.item</code>
+     * @param slot the slot name to paginate
+     * @param params a parameters used to evaluate the slot. 
+     * @param pageSize the maximum number of slot items per page. 
+     * @param pageNumber the number of the page. 
+     * @return the list of items returned in the slot. 
+     * Never <code>null</code>.  May be <code>empty</code>.
+     * @throws Throwable
+     */
     @IPSJexlMethod(description="Get slot contents for a specified page number", params={
           @IPSJexlParam(name="item", description="current item"),
           @IPSJexlParam(name="slot", description="slot to paginate"),
@@ -180,6 +231,19 @@ public class Paginator extends PSJexlUtilBase implements IPSJexlExpression
        
        return getSlotPageN(item, slot, params, pageSz, pageNo);
     }
+    
+    /**
+     * Gets the contents of the slot paginated. 
+     * @param item the parent item which contains the slot.  Usually
+     * <code>$sys.item</code>
+     * @param slot the slot name to paginate
+     * @param params a parameters used to evaluate the slot. 
+     * @param pageSize the maximum number of slot items per page. 
+     * @param pageNumber the number of the page. 
+     * @return the list of items returned in the slot. 
+     * Never <code>null</code>.  May be <code>empty</code>.
+     * @throws Throwable
+     */
     @IPSJexlMethod(description="Get slot contents for a specified page number", params={
           @IPSJexlParam(name="item", description="current item"),
           @IPSJexlParam(name="slot", description="slot to paginate"),
@@ -226,6 +290,18 @@ public class Paginator extends PSJexlUtilBase implements IPSJexlExpression
          return asm.assemble(relItems); 
     }
     
+    /**
+     * Convenience method for getSlotPageCountN. 
+     * Used when the page size is available as a String. 
+     * Gets the page count on a slot. 
+     * @param item the parent item that contains the slot.
+     * @param slot the name of the slot.
+     * @param params the parameters used to assemble the slot. 
+     * @param pageSize the number of items per page. 
+     * @return the list of items in the slot. 
+     * Never <code>null</code>.  May be <code>empty</code>. 
+     * @throws Throwable
+     */
     @IPSJexlMethod(description="Get slot page count", params={
           @IPSJexlParam(name="item", description="current item"),
           @IPSJexlParam(name="slot", description="slot to paginate"),
@@ -243,6 +319,16 @@ public class Paginator extends PSJexlUtilBase implements IPSJexlExpression
        return getSlotPageCountN(item, slot, params, pagesz); 
        }
 
+    /**
+     * Gets the page count on a slot. 
+     * @param item the parent item that contains the slot.
+     * @param slot the name of the slot.
+     * @param params the parameters used to assemble the slot. 
+     * @param pageSize the number of items per page. 
+     * @return the list of items in the slot. 
+     * Never <code>null</code>.  May be <code>empty</code>. 
+     * @throws Throwable
+     */
     @IPSJexlMethod(description="Get slot page count", params={
           @IPSJexlParam(name="item", description="current item"),
           @IPSJexlParam(name="slot", description="slot to paginate"),
@@ -283,6 +369,17 @@ public class Paginator extends PSJexlUtilBase implements IPSJexlExpression
        log.trace("page count " + pgcount); 
        return new Integer(pgcount);  
     }
+    
+    /**
+     * Convenience methods for createLocationListN().  
+     * Used when the page count is available when the page count is 
+     * available as a String. 
+     * Creates a list of locations.  Appends the "_N" to the based location
+     * and produces an expanded list.  
+     * @param location the base location.
+     * @param pagecount the number of pages. 
+     * @return the list of locations. Never <code>null</code>
+     */
     @IPSJexlMethod(description="create the list of locations", params={
           @IPSJexlParam(name="location", description="base location for item"),
           @IPSJexlParam(name="pagecount", description="number of pages") }) 
@@ -305,6 +402,13 @@ public class Paginator extends PSJexlUtilBase implements IPSJexlExpression
        return PaginatorUtils.createLocationList(location, pagect); 
     }
     
+    /**
+     * Creates a list of locations.  Appends the "_N" to the based location
+     * and produces an expanded list.  
+     * @param location the base location.
+     * @param pagecount the number of pages. 
+     * @return the list of locations. Never <codenull</code>
+     */
     @IPSJexlMethod(description="create the list of locations", params={
           @IPSJexlParam(name="location", description="base location for item"),
           @IPSJexlParam(name="pagecount", description="number of pages") }) 
@@ -331,6 +435,12 @@ public class Paginator extends PSJexlUtilBase implements IPSJexlExpression
     	}
     }
     
+    /**
+     * Wraps a string within <code>&lt;div&gt;</code> tag. Used to 
+     * insure that the page content is well formed. 
+     * @param in the raw string to be wrapped.      
+     * @return the wrapped string. 
+     */
     private static String wrapString(String in)
     {
        StringBuilder builder = new StringBuilder();
@@ -340,6 +450,11 @@ public class Paginator extends PSJexlUtilBase implements IPSJexlExpression
        return builder.toString(); 
     }
 
+    /**
+     * Unwraps a string which was originally wrapped.  
+     * @param in the wrapped string
+     * @return the string unwrapped. 
+     */
     private static String unwrapString(String in)
     {
        String temp = in;

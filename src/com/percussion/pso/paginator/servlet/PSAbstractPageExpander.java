@@ -65,6 +65,13 @@ public abstract class PSAbstractPageExpander
       super();
    }
    
+   /**
+    * Counts the pages for this item.  
+    * @param item the content list item to expand. 
+    * @return the number of pages.  Implementations should return -1
+    * when the pages cannot be counted. 
+    * @throws PSAssemblyException
+    */
    protected abstract int countPages(IPSContentListItem item) throws PSAssemblyException; 
    
    public List<IPSContentListItem> expand(List<IPSContentListItem> items) throws PSAssemblyException 
@@ -74,7 +81,7 @@ public abstract class PSAbstractPageExpander
       for (IPSContentListItem item : items)
       {
          int total_pages = countPages(item);
-         if (total_pages != -1)
+         if (total_pages > 0)
          {            
             String oldLocation = item.getLocation();
             for (int page = 1; page <= total_pages; page++)

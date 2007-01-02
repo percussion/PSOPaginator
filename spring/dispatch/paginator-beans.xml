@@ -7,6 +7,7 @@
               <!-- keep same name for compatibility -->
               <prop key="paginator/contentlist.htm">paginatorLocationController</prop>
               <prop key="paginator/templateclist.xml">paginatorTemplateController</prop>
+              <prop key="paginator/locationclist.xml">paginatorLocationController</prop>
          </props>
       </property>
       </bean>
@@ -34,6 +35,7 @@
     
     <bean id="templatePageExpander" 
        class="com.percussion.pso.paginator.servlet.PSTemplatePageExpander">
+       <!-- this HTML parameter indicates to the template that we are counting pages -->
        <property name="pageCountParameterName">
           <value>pagecount</value>
        </property>

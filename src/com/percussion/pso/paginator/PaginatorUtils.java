@@ -39,7 +39,7 @@ public class PaginatorUtils
    /**
     * Takes the old location and creates a new location with the given page number.
     * 
-    * @param location, should not be null.
+    * @param location the location never <code>null</code>.
     * @param pageno
     * @return location, never null
     */

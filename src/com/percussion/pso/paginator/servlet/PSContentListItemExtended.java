@@ -20,7 +20,8 @@ import com.percussion.services.publisher.data.PSContentListItem;
 import com.percussion.utils.guid.IPSGuid;
 
 /**
- * 
+ * A concrete implementation of the {@link IPSContentListItem} 
+ * interface.
  *
  * @author DavidBenua
  *
@@ -44,7 +45,7 @@ public class PSContentListItemExtended extends PSContentListItem implements IPSC
    private PSOMutableUrl assemblyURL = null; 
       
    /**
-    * Creates a new content list item
+    * Creates a new content list item. 
     * @param cid the content GUID
     * @param fid the folder GUID
     * @param tid the template GUID

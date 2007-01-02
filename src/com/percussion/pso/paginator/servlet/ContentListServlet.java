@@ -264,25 +264,17 @@ public class ContentListServlet extends AbstractController {
     }
     
     /**
-     * Assemble a single content list item
-     * 
-     * @param pub the publishing service, never <code>null</code>
-     * @param cms the legacy content service, never <code>null</code>
-     * @param asm the assembly service, never <code>null</code>
-     * @param formatter the xml output formatter, never <code>null</code>
-     * @param context the context
-     * @param host the host, if <code>null</code> or empty, defaults to the
-     *           server's host
-     * @param protocol the protocol as a string, defaults to server's protocol
-     * @param port the port, defaults to server's port
-     * @param publish the publish flag
-     * @param list the content list that is being processed, never
-     *           <code>null</code>
-     * @param item the current item being run, never <code>null</code>
+     * Formats a single content list entry for assembly and publishing. 
+     * @param formatter the output stream where the entry will be written.
+     * @param host the server host name
+     * @param protocol the protocol. Usually <code>HTTP</code> or <code>HTTPS</code>
+     * @param port the port the server listens on.
+     * @param list the Content List definition. 
+     * @param item the item to publish
      * @throws XMLStreamException
      * @throws PSPublisherException
      * @throws PSAssemblyException
-    * @throws PSRequestParsingException 
+     * @throws PSRequestParsingException
      */
     protected void formatContentListItem(
           XMLStreamWriter formatter,  String host, String protocol,

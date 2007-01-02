@@ -186,7 +186,8 @@ public class HTMLPaginator extends DefaultHandler
 		return resultHTML;
 	}
 	/**
-	 * @param resultHTML The resultHTML to set.
+     * Sets the HTML result. 
+	 * @param res The resultHTML to set.
 	 */
 	private static void setResultHTML(String res) 
 	{

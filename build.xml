@@ -63,12 +63,14 @@
 	
 	<target name="javadoc" depends="compile">
 		<mkdir dir="apidoc"/>
-		<javadoc destdir="apidoc" private="true" use="yes" 
+		<javadoc destdir="apidoc" protected="true" use="yes" 
 		windowtitle="${ant.project.name}">
 			<packageset dir="${src}" defaultexcludes="yes">
 				<include name="com/percussion/pso/**"/>	
 			</packageset>
 			<classpath refid="rx.class.path"/>
+			<link href="http://java.sun.com/j2se/1.5.0/docs/api/" />
+			<link href="file:///d:/RxRhino/Docs/Rhythmyx/Javadocs" />
 		</javadoc>
 	</target>
 	
@@ -113,6 +115,7 @@
 	<target name="dist" depends="init,compile" description="generate the distribution">
 		<buildnumber/>
 		<antcall target="jarbuilder"/>
+		<antcall target="javadoc" /> 
 		<zip destfile="${distfile}">						
 			<zipfileset dir="." includes="${jarname}" />
 			<zipfileset dir="${lib}" includes="PSOToolkit60.jar" prefix="lib" />
