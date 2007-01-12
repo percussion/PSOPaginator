@@ -1,3 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PSXExtensionHandlerConfiguration handlerName="Java">
 <Extension name="paginator" context="global/percussion/user" handler="Java" deprecated="no">
 		<initParam name="com.percussion.user.description">Page paginator</initParam>
 		<initParam name="com.percussion.extension.version">1</initParam>
@@ -5,3 +7,60 @@
 		<initParam name="className">com.percussion.pso.paginator.Paginator</initParam>
 		<interface name="com.percussion.extension.IPSJexlExpression"/>
 </Extension>
+<Extension categorystring="SlotContentFinder" 
+	   context="global/percussion/slotcontentfinder/" 
+	   deprecated="no" handler="Java" 
+	   name="pso_RelationshipContentFinder" 
+	   restoreRequestParamsOnError="no">
+		<initParam name="com.percussion.user.description"/>
+		<initParam name="com.percussion.extension.version">1</initParam>
+		<initParam name="className">com.percussion.pso.paginator.finder.PSORelationshipRevisionSlotFinder</initParam>
+		<initParam name="com.percussion.extension.reentrant">yes</initParam>
+		<interface name="com.percussion.services.assembly.IPSSlotContentFinder"/>
+		<PSXExtensionParamDef id="0">
+			<name>template</name>
+			<dataType>java.lang.String</dataType>
+			<description>The template to use to format the returned items, will override the template specified by the relationship if defined. A typical use for this would be an FAQ where the same slot is rendered twice. You may specify either a name or an id.</description>
+		</PSXExtensionParamDef>
+		<PSXExtensionParamDef id="1">
+			<name>max_results</name>
+			<dataType>java.lang.String</dataType>
+			<description>The maximum number of items to return for the slot, defaults to unlimited.</description>
+		</PSXExtensionParamDef>
+		<PSXExtensionParamDef id="2">
+			<name>order_by</name>
+			<dataType>java.lang.String</dataType>
+			<description>One or more comma separated field components. Each component names a field available in the related content objects and a direction. The syntax of this mirrors that for the JSR-170 queries.</description>
+		</PSXExtensionParamDef>
+		<suppliedResources/>
+</Extension>
+<Extension categorystring="SlotContentFinder" context="global/percussion/slotcontentfinder/" deprecated="no" 
+         handler="Java" name="pso_AutoSlotContentFinder" restoreRequestParamsOnError="no">
+		<initParam name="com.percussion.user.description"/>
+		<initParam name="com.percussion.extension.version">5</initParam>
+		<initParam name="com.percussion.extension.reentrant">yes</initParam>
+		<initParam name="className">com.percussion.pso.paginator.finder.PSOAutoSlotContentFinder</initParam>
+		<interface name="com.percussion.services.assembly.IPSSlotContentFinder"/>
+		<PSXExtensionParamDef id="0">
+			<name>query</name>
+			<dataType>java.lang.String</dataType>
+			<description>(Required) The JSR-170 query to use in finding the base items for the slot.</description>
+		</PSXExtensionParamDef>
+		<PSXExtensionParamDef id="1">
+			<name>type</name>
+			<dataType>java.lang.String</dataType>
+			<description>The type of the query specified, either “sql” or “xpath”. Only “sql” is officially supported. If omitted this defaults to “sql”.</description>
+		</PSXExtensionParamDef>
+		<PSXExtensionParamDef id="2">
+			<name>template</name>
+			<dataType>java.lang.String</dataType>
+			<description>(Required) The template to use to format the returned items, you may specify either a name or an id.</description>
+		</PSXExtensionParamDef>
+		<PSXExtensionParamDef id="3">
+			<name>max_results</name>
+			<dataType>java.lang.String</dataType>
+			<description>The maximum number of items to return for the slot, defaults to unlimited.</description>
+		</PSXExtensionParamDef>
+		<suppliedResources/>
+	</Extension>
+</PSXExtensionHandlerConfiguration>

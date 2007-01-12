@@ -45,20 +45,13 @@
 		<copy todir="${RHYTHMYX.spring}" verbose="true">
 		    <fileset dir="spring"/>
 	    </copy>
-<!--		<move file="spring/${spring.contentlist}" todir="${RHYTHMYX.spring}" /> -->
 		<copy todir="${RHYTHMYX.home}/" overwrite="true">
 		      <fileset dir="Rx_Resources_Ephox/">
 		        <include name="**/*.*"/>
 		      </fileset>
        	</copy>
        	<antcall target="addProperty"/>
-       	<!-- echo>Deleting all remaining extraneous files</echo>
-		
-       	<delete dir="spring"/>
-       	<delete dir="Rx_Resources_Ephox"/>
-       	<delete file="deploy.xml"/>
-       	<delete file="Extensions.xml"/>
-		<delete file="Paginator.tar"/> -->
+  
    		<echo>Deployment complete</echo>
 	</target>
 	
@@ -66,9 +59,6 @@
 		<echo>Transforming UserDispatcher-servlet</echo>
 		<copy file="${RHYTHMYX.spring}/UserDispatcher-servlet.xml" todir=""/>
 		<xslt in="UserDispatcher-servlet.xml" style="${stylesheet}" out="Output.xml" force="yes" />
-		<!-- echo>Deleted extraneous files</echo -->
-		<!-- delete file="${stylesheet}"/ -->
-		<!-- delete file="UserDispatcher-servlet.xml"/ -->
 		<echo>Updated UserDispatcher-servlet.xml</echo>
 		<copy file="Output.xml" tofile="UserDispatcher-servlet.xml" />
 		<copy file="UserDispatcher-servlet.xml" todir="${RHYTHMYX.spring}" />

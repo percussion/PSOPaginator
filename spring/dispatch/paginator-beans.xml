@@ -8,21 +8,22 @@
               <prop key="paginator/contentlist.htm">paginatorLocationController</prop>
               <prop key="paginator/templateclist.xml">paginatorTemplateController</prop>
               <prop key="paginator/locationclist.xml">paginatorLocationController</prop>
+              <prop key="paginator/singlepageclist.xml">paginatorSinglePageController</prop> 
          </props>
       </property>
-      </bean>
+    </bean>
           
     <bean id="paginatorLocationController"
 		class="com.percussion.pso.paginator.servlet.ContentListServlet">
 	    <property name="pageExpander">
-	    	<ref bean="locationPageExpander" />
+	    	<ref bean="locationRevisionFilteringExpander" />
 	    </property>
     </bean>
 
     <bean id="paginatorTemplateController"
 		class="com.percussion.pso.paginator.servlet.ContentListServlet">
 	    <property name="pageExpander">
-	    	<ref bean="templatePageExpander" />
+	    	<ref bean="templateRevisionFilteringExpander" />
 	    </property>	  
     </bean>
     
@@ -44,4 +45,32 @@
           <value>$pagecount</value>
        </property>
     </bean>
+    
+    <!-- Revision filtering content lists -->
+    <bean id="paginatorSinglePageController"
+		class="com.percussion.pso.paginator.servlet.ContentListServlet">
+	    <property name="pageExpander">
+	    	<ref bean="unaryRevisionFilteringExpander" />
+	    </property>
+    </bean>
+    
+    
+    <!-- Expanders that filter for correct revisions -->
+    <bean id="templateRevisionFilteringExpander"
+       class="com.percussion.pso.paginator.servlet.PSWorkflowFilteringPageExpander" >
+       <property name="wrappedPageExpander" ref="templatePageExpander" />
+    </bean>
+    
+    <bean id="locationRevisionFilteringExpander"  
+       class="com.percussion.pso.paginator.servlet.PSWorkflowFilteringPageExpander" >
+       <property name="wrappedPageExpander" ref="templatePageExpander" />
+    </bean>
+    
+    <bean id="unaryRevisionFilteringExpander" 
+       class="com.percussion.pso.paginator.servlet.PSWorkflowFilteringPageExpander" >
+       <property name="wrappedPageExpander" ref="unaryPageExpander" />
+    </bean>
+    
+    <bean id="unaryPageExpander" 
+       class="com.percussion.pso.paginator.servlet.PSUnaryPageExpander" />
 </beans>

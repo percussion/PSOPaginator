@@ -89,6 +89,19 @@
 			<!-- <include name="readme.txt" /> -->
 		</jar>
 	</target>
+
+	<target name="installExtensions">
+		<java classname="com.percussion.util.PSExtensionInstallTool" fork="true">
+		    <arg value="${rx.home}" />
+			<arg value="${basedir}" />
+			<classpath>
+				<fileset dir="${rx.lib}"/>
+			    <fileset dir="${rx.home}/AppServer/lib/endorsed" />
+				<fileset dir="${rx.home}/AppServer/server/rx/lib" />
+			</classpath>			
+		</java>     
+	</target>
+
 	
 	<target name="testbuild" depends="compile" description="build for local test">		
 		<echo>Stopping ${rx.service}</echo>

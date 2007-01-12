@@ -1,0 +1,18 @@
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" 
+"http://www.springframework.org/dtd/spring-beans.dtd">
+<beans>
+   <bean id="PSORevisionService"  singleton="true"
+    class="com.percussion.pso.paginator.revision.impl.PSORevisionServiceImpl">
+    <property name="workflowStates">
+       <list>
+          <value>Beta</value>
+          <value>Quick Edit Beta</value>
+       </list>       
+    </property>
+    <property name="itemFilters">
+       <list>
+          <value>Beta</value>
+       </list>
+    </property>
+   </bean>
+</beans>
