@@ -13,6 +13,7 @@
 	<property name="axis_home" location="${env.AXIS_HOME}"/> 
 	<!-- name of our output jar --> 
 	<property name="jarname" value="PSOPaginator.jar" />	
+	<property name="tarname" value="psopaginator.tar.gz" />
 	<!-- name of our distribution zip -->
 	<property name="distfile" value="PSOPaginator.zip" />
 	
@@ -132,23 +133,29 @@
 		<zip destfile="${distfile}">						
 			<zipfileset dir="." includes="${jarname}" />
 			<zipfileset dir="${lib}" includes="PSOToolkit60.jar" prefix="lib" />
-			<zipfileset dir="Rx_Resources_Ephox/rx_resources/ephox" includes="**.*" 
-				prefix="Rx_Resources_Ephox/rx_resources/ephox"/>
-			
-			<zipfileset dir="Rx_Resources_Ephox/rx_resources/ephox/images" includes="**.*" 
-				prefix="Rx_Resources_Ephox/rx_resources/ephox/images/"/>
-			
-			<zipfileset dir="Rx_Resources_Ephox/rx_resources/stylesheets" includes="**.*" 
-				prefix="Rx_Resources_Ephox/rx_resources/stylesheets"/>
+			<zipfileset dir="Rx_Resources_Ephox/rx_resources" 
+				prefix="Rx_Resources_Ephox/rx_resources"/>
 			<zipfileset dir="spring"  prefix="spring" />
 			<fileset dir="." includes="readme.txt, build.number" />
 			<fileset dir="." includes="deploy.xml *.xslt"/>
-			<fileset dir="." includes="Extensions.xml InstallExtensions.bat InstallExtensions.sh" />
+			<fileset dir="." includes="Extensions.xml" /> 
 			<zipfileset dir="${apidoc}" prefix="javadoc"/>			
 			<!--<fileset dir="Rhythmyx" includes="**"/>-->
-		</zip>
-			
+		</zip>			
+		
+		<tar destfile="${tarname}" compression="gzip">
+			<tarfileset dir="." includes="${jarname}" mode="755" />
+			<tarfileset dir="${lib}" includes="PSOToolkit60.jar" prefix="lib"  mode="755" />
+			<tarfileset dir="Rx_Resources_Ephox/rx_resources" 
+					prefix="Rx_Resources_Ephox/rx_resources" mode="644"/>
+			<tarfileset dir="spring"  prefix="spring" mode="644" />
+		    <tarfileset dir="." includes="readme.txt, build.number"  mode="644" />
+			<tarfileset dir="." includes="deploy.xml *.xslt" mode="644" />
+			<tarfileset dir="." includes="Extensions.xml" mode="644" />
+	    </tar>
 	</target>
+	
+	
 	<target name="clean" description="clean up">
 		<delete dir="${bin}"/>
 		<mkdir dir="${bin}"/>
