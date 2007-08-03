@@ -78,6 +78,49 @@ public class Paginator extends PSJexlUtilBase implements IPSJexlExpression
         {
             return String.valueOf(getBodyPageCount(fieldContent)); 
         }
+   /**
+    * Creates the location to a paginated page with the given page number
+    * and specified context.  If the context is not specified, it is assumed to be 1.
+    * @param location, the location never <code>null</code>.
+    * @param pageno
+    * @return context, the context to create the URL in
+    */
+   @IPSJexlMethod(description="Return the page url", params={
+		   @IPSJexlParam(name="location", description="Current page location"),
+		   @IPSJexlParam(name="pageno", description="The page number to use for the new location"),
+		   @IPSJexlParam(name="context", description="The context to specify how the url will be created")} ) 
+	   public String createNewLocation(String location, int pageno, String context) 
+	   {
+		   if(StringUtils.isBlank(location))
+	       {
+	          String emsg = "Location must not be blank"; 
+	          log.error(emsg); 
+	          throw new IllegalArgumentException(emsg); 
+	       }
+		   
+		   if(pageno < 0)
+		   {
+			   String emsg = "Page number must be greater than zero: " + pageno;
+			   log.error(emsg);
+			   throw new IllegalArgumentException(emsg);
+		   }
+		   
+		   if(StringUtils.isBlank(context))
+		   {
+			   String emsg = "Context should not be empty";
+			   log.error(emsg);
+			   throw new IllegalArgumentException(emsg);
+		   }
+		   else if (StringUtils.isNumeric(context) && Integer.parseInt(context) < 0)
+		   {
+			   String emsg = "Context should be numeric and greater than zero: " + pageno;
+			   log.error(emsg);
+			   throw new IllegalArgumentException(emsg);
+		   }
+		   int contextInt = Integer.parseInt(context);
+	  
+	   	  return PaginatorUtils.createNewLocation(location, pageno, contextInt);
+	   }
    
    /**
     * Counts the number of pages in a body field.  The page breaks will be 
@@ -122,7 +165,7 @@ public class Paginator extends PSJexlUtilBase implements IPSJexlExpression
 		{
 			return fieldContent;
 		}
-        return getBodyPageN(fieldContent, Long.valueOf(fieldContent)); 
+        return getBodyPageN(fieldContent, Long.valueOf(pageNumber)); 
     	 
     }
     
