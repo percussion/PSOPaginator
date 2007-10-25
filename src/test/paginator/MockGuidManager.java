@@ -109,4 +109,18 @@ public class MockGuidManager implements IPSGuidManager
       // TODO Auto-generated method stub
       return null;
    }
+
+    public List<Integer> extractContentIds(List<IPSGuid> guids) {
+        // TODO Auto-generated method stub
+        // return null;
+        throw new UnsupportedOperationException(
+                "extractContentIds is not yet supported");
+    }
+
+    public PSLocator makeLocator(IPSGuid guid) {
+        // TODO Auto-generated method stub
+        // return null;
+        throw new UnsupportedOperationException(
+                "makeLocator is not yet supported");
+    }
 }

@@ -375,4 +375,27 @@ public class MockAssemblyService implements IPSAssemblyService
    {
       this.slot = slot;
    }
+
+    public IPSAssemblyItem createAssemblyItem() {
+        // TODO Auto-generated method stub
+        // return null;
+        throw new UnsupportedOperationException(
+                "createAssemblyItem is not yet supported");
+    }
+
+    public IPSAssemblyTemplate loadUnmodifiableTemplate(IPSGuid tid)
+            throws PSAssemblyException {
+        // TODO Auto-generated method stub
+        // return null;
+        throw new UnsupportedOperationException(
+                "loadUnmodifiableTemplate is not yet supported");
+    }
+
+    public IPSAssemblyTemplate loadUnmodifiableTemplate(String tid)
+            throws PSAssemblyException {
+        // TODO Auto-generated method stub
+        //return null;
+        throw new UnsupportedOperationException(
+                "loadUnmodifiableTemplate is not yet supported");
+    }
 }

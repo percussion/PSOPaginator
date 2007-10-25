@@ -7,6 +7,7 @@
 package test.paginator;
 
 import java.io.IOException;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import org.xml.sax.SAXException;
@@ -150,5 +151,11 @@ public class MockItemFilter implements IPSItemFilter
     */
    public void setGUID(IPSGuid newguid) throws IllegalStateException
    {
+   }
+   
+   public List<IPSFilterItem> filter(List<IPSFilterItem> items, Map<String, String> params) throws PSFilterException {
+    // TODO Auto-generated method stub
+    //return null;
+    throw new UnsupportedOperationException("filter is not yet supported");
    }
 }
