@@ -89,7 +89,7 @@ public class Paginator extends PSJexlUtilBase implements IPSJexlExpression
 		   @IPSJexlParam(name="location", description="Current page location"),
 		   @IPSJexlParam(name="pageno", description="The page number to use for the new location"),
 		   @IPSJexlParam(name="context", description="The context to specify how the url will be created")} ) 
-	   public String createNewLocation(String location, int pageno, String context) 
+	   public String createNewLocation(String location, Number pageno, String context) 
 	   {
 		   if(StringUtils.isBlank(location))
 	       {
@@ -98,7 +98,7 @@ public class Paginator extends PSJexlUtilBase implements IPSJexlExpression
 	          throw new IllegalArgumentException(emsg); 
 	       }
 		   
-		   if(pageno < 0)
+		   if( pageno == null || pageno.intValue() < 0)
 		   {
 			   String emsg = "Page number must be greater than zero: " + pageno;
 			   log.error(emsg);
@@ -119,7 +119,7 @@ public class Paginator extends PSJexlUtilBase implements IPSJexlExpression
 		   }
 		   int contextInt = Integer.parseInt(context);
 	  
-	   	  return PaginatorUtils.createNewLocation(location, pageno, contextInt);
+	   	  return PaginatorUtils.createNewLocation(location, pageno.intValue(), contextInt);
 	   }
    
    /**

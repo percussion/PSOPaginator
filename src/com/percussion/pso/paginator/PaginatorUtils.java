@@ -101,8 +101,8 @@ public class PaginatorUtils
    		  else if (!location.contains("pageno"))
    		  {
    			  log.debug("pageno was not in the url");
-   			  log.debug("The returned url is: " + location + "&pageno=" + pageno);
-   			  return location + "&pageno=" + pageno;  
+   			  log.debug("The returned url is: " + location + "&amp;pageno=" + pageno);
+   			  return location + "&amp;pageno=" + pageno;  
    		  }
    	  }
       else
