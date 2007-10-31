@@ -87,7 +87,7 @@ public abstract class PSAbstractPageExpander
             for (int page = 1; page <= total_pages; page++)
             {
                IPSContentListItem ni = item.clone();
-               String newLocation = PaginatorUtils.createNewLocation(oldLocation, page);
+               String newLocation = PaginatorUtils.createNewLocation(oldLocation, page, 1);
                log.debug("Page " + page + " new location " + newLocation);
                ni.setLocation(newLocation);
                ni.getExtraParams().put(pageParamName,

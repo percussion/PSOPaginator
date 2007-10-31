@@ -30,40 +30,15 @@ public class PaginatorUtils
    
    private static final Log log = LogFactory.getLog(Paginator.class);
    
-   public static List<String> createLocationList(String location, int pagecount)
+   public static List<String> createLocationList(String location, int pagecount, int context)
    {
       List<String> outList = new ArrayList<String>();
       for(int i = 1; i <= pagecount; i++)
       {
-         outList.add(createNewLocation(location,i)); 
+         outList.add(createNewLocation(location,i,context)); 
       }
       
       return outList; 
-   }
-   /**
-    * Takes the old location and creates a new location with the given page number.
-    * The context is passed as 1 by default
-    * @param location the location never <code>null</code>.
-    * @param pageno
-    * @return location, never null
-    */
-   public static String createNewLocation(String location, int pageno) 
-   {
-	   if(StringUtils.isBlank(location))
-       {
-          String emsg = "Location must not be blank"; 
-          log.error(emsg); 
-          throw new IllegalArgumentException(emsg); 
-       }
-	   
-	   if(pageno < 0)
-	   {
-		   String emsg = "Page number must be greater than zero: " + pageno;
-		   log.error(emsg);
-		   throw new IllegalArgumentException(emsg);
-	   }
-	  
-      return createNewLocation(location, pageno, 1); 
    }
    /**
     * Takes the old location and creates a new location with the given page number.
@@ -73,7 +48,20 @@ public class PaginatorUtils
     * @return location, never null
     */
    public static String createNewLocation(String location, int pageno, int context) 
-   {  	    	   	  
+   {  
+       if(StringUtils.isBlank(location))
+       {
+          String emsg = "Location must not be blank"; 
+          log.error(emsg); 
+          throw new IllegalArgumentException(emsg); 
+       }
+       
+       if(pageno < 0)
+       {
+           String emsg = "Page number must be greater than zero: " + pageno;
+           log.error(emsg);
+           throw new IllegalArgumentException(emsg);
+       }
    	  if (context == 0)
    	  {
    		  log.debug("creating preview url for context: " + context);

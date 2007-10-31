@@ -39,6 +39,7 @@ import com.percussion.services.assembly.IPSAssemblyItem;
 import com.percussion.services.assembly.IPSAssemblyResult;
 import com.percussion.services.assembly.IPSAssemblyService;
 import com.percussion.services.assembly.PSAssemblyServiceLocator;
+import com.percussion.services.assembly.jexl.PSLocationUtils;
 
 
 public class Paginator extends PSJexlUtilBase implements IPSJexlExpression
@@ -63,6 +64,125 @@ public class Paginator extends PSJexlUtilBase implements IPSJexlExpression
       
    }
    
+   public abstract class PaginatorContainer {
+        private String location;
+
+        private IPSAssemblyItem assemblyItem;
+
+        private int currentPageNo;
+
+        private int pageCount;
+
+        private int pageSize;
+        
+        private List<String> pageLinks;
+        
+        public int getCurrentPageNo() {
+            return currentPageNo;
+        }
+
+        public void setCurrentPageNo(int currentPageNo) {
+            this.currentPageNo = currentPageNo;
+        }
+
+        public String getLocation() {
+            return location;
+        }
+
+        public void setLocation(String location) {
+            this.location = location;
+            this.assemblyItem = null;
+        }
+
+        public int getPageCount() {
+            return pageCount;
+        }
+
+        protected void setPageCount(int pageCount) {
+            this.pageCount = pageCount;
+        }
+
+        public int getPageSize() {
+            return pageSize;
+        }
+
+        protected void setPageSize(int pageSize) {
+            this.pageSize = pageSize;
+        }
+
+        private String getPageLink(int pageno) {
+            int i =  pageno - 1;
+            if (i < 0 || pageLinks == null || pageLinks.size() <= i ) return null;
+            else return pageLinks.get(i);
+        }
+        public String getNextPageLink() {
+            return getPageLink(getCurrentPageNo() + 1);
+        }
+        
+        public String getPrevPageLink() {
+            return getPageLink(getCurrentPageNo() - 1);
+        }
+        
+        public String getPageLink() {
+            return getPageLink(getCurrentPageNo());
+        }
+        
+        public List<String> getPageLinks() {
+            return pageLinks;
+        }
+
+        public IPSAssemblyItem getAssemblyItem() {
+            return assemblyItem;
+        }
+
+        protected void setAssemblyItem(IPSAssemblyItem assemblyItem) {
+            this.assemblyItem = assemblyItem;
+        }
+
+        protected void setPageLinks(List<String> pageLinks) {
+            this.pageLinks = pageLinks;
+        }
+        
+        public abstract List<IPSAssemblyItem> getPage();
+
+    }
+   
+   public class SlotPaginatorContainer extends PaginatorContainer {
+       private String slot;
+       
+       @SuppressWarnings("unchecked")
+    public SlotPaginatorContainer(int pageSize, String slot, IPSAssemblyItem item) throws Throwable {
+           this.slot = slot;
+
+           String contextString = item.getParameterValue("sys_context", null);
+           String pageNoString = item.getParameterValue("pageno", "1");
+           int context = Integer.parseInt(contextString);
+           PSLocationUtils util = new PSLocationUtils();
+           Map params = item.getParameters();
+           setLocation(util.generate(item, item.getTemplate()));
+           setAssemblyItem(item);
+           setPageCount(getSlotPageCountN(item, slot, params, new Integer(pageSize)).intValue());
+           setPageLinks(PaginatorUtils.createLocationList(getLocation(), getPageCount(), context));
+           setPageSize(pageSize);
+           setCurrentPageNo(Integer.parseInt(pageNoString));
+           
+       }
+
+       public String getSlot() {
+            return slot;
+        }
+
+        public void setSlot(String slot) {
+            this.slot = slot;
+        }
+
+        @Override
+        public List<IPSAssemblyItem> getPage() {
+            // TODO Auto-generated method stub
+            //return null;
+            throw new UnsupportedOperationException("getPage is not yet supported");
+        }
+   }
    /**
     * Counts the number of pages in a body field.  The page breaks will be 
     * one more than the number of pages, so a field with 1 page break is
@@ -225,6 +345,16 @@ public class Paginator extends PSJexlUtilBase implements IPSJexlExpression
          
     }
 
+
+    @IPSJexlMethod(description="Gets a paginator for a slot", params={
+          @IPSJexlParam(name="item", description="current item"),
+          @IPSJexlParam(name="slot", description="slot to paginate"),
+          @IPSJexlParam(name="pageSize", description="number of items per page") }) 
+    public SlotPaginatorContainer getSlotPaginator(IPSAssemblyItem item, String slot, Number pageSize) 
+        throws Throwable {
+        return new SlotPaginatorContainer(pageSize.intValue(),slot,item);
+    }
+    
     /**
      * Convenience method for getSlotPageN.  
      * Gets the contents of the slot paginated. 
@@ -442,7 +572,7 @@ public class Paginator extends PSJexlUtilBase implements IPSJexlExpression
              throw new IllegalArgumentException(emsg);
           }
        }
-       return PaginatorUtils.createLocationList(location, pagect); 
+       return PaginatorUtils.createLocationList(location, pagect, 1); 
     }
     
     /**
@@ -457,7 +587,7 @@ public class Paginator extends PSJexlUtilBase implements IPSJexlExpression
           @IPSJexlParam(name="pagecount", description="number of pages") }) 
     public List<String> createLocationListN(String location, Number pagecount)
     {
-       return PaginatorUtils.createLocationList(location, pagecount.intValue()); 
+       return PaginatorUtils.createLocationList(location, pagecount.intValue(), 1); 
     }
     /*
      *  To create an Input source for the SAX parser
