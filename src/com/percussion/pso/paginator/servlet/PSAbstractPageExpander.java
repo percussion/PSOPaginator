@@ -112,7 +112,12 @@ public abstract class PSAbstractPageExpander
       PSLegacyGuid cid = (PSLegacyGuid)item.getContentId(); //TODO: use the GUID Manager in 6.01
       params.put(IPSHtmlParameters.SYS_CONTENTID, new String[]{String.valueOf(cid.getContentId())});
       params.put(IPSHtmlParameters.SYS_REVISION, new String[]{String.valueOf(cid.getRevision())});
-      params.put(IPSHtmlParameters.SYS_FOLDERID, new String[]{String.valueOf(item.getFolderId().longValue())});
+      if (item.getFolderId() != null) {
+          params.put(IPSHtmlParameters.SYS_FOLDERID, new String[]{String.valueOf(item.getFolderId().longValue())});
+      }
+      else {
+          log.debug("Content List item " + item.getContentId() + "was missing it's folderid");
+      }
       params.put(IPSHtmlParameters.SYS_TEMPLATE, new String[]{String.valueOf(item.getTemplateId().longValue())});
       params.put(IPSHtmlParameters.SYS_CONTEXT, new String[]{String.valueOf(item.getContext())});
       params.put(IPSHtmlParameters.SYS_SITEID, new String[]{String.valueOf(item.getSiteId().longValue())});
