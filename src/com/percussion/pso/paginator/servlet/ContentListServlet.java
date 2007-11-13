@@ -59,7 +59,7 @@ public class ContentListServlet extends AbstractController {
     
     private static IPSAssemblyService asm = null; 
     
-    private static IPSItemLocationGenerator itemLocationGenerator;
+    private static IPSContentListItemLocationGenerator itemLocationGenerator;
     
     private static Log log = LogFactory.getLog(ContentListServlet.class);
 
@@ -83,7 +83,7 @@ public class ContentListServlet extends AbstractController {
             cms = PSCmsObjectMgrLocator.getObjectManager();
             asm = PSAssemblyServiceLocator.getAssemblyService();
             cache = PSCacheAccessLocator.getCacheAccess();
-            itemLocationGenerator = new IPSItemLocationGenerator() {
+            itemLocationGenerator = new IPSContentListItemLocationGenerator() {
 
                 public String makeLocation(IPSContentListItem item) {
                     return item.getLocation();
@@ -476,11 +476,11 @@ public static IPSCacheAccess getCache() {
 public static void setCache(IPSCacheAccess cache) {
     ContentListServlet.cache = cache;
 }
-public static IPSItemLocationGenerator getItemLocationGenerator() {
+public static IPSContentListItemLocationGenerator getItemLocationGenerator() {
     return itemLocationGenerator;
 }
 public static void setItemLocationGenerator(
-        IPSItemLocationGenerator itemLocationGenerator) {
+        IPSContentListItemLocationGenerator itemLocationGenerator) {
     ContentListServlet.itemLocationGenerator = itemLocationGenerator;
 }
   

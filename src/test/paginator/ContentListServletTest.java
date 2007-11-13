@@ -22,7 +22,7 @@ import org.junit.runner.RunWith;
 import com.percussion.cms.objectstore.PSComponentSummary;
 import com.percussion.pso.paginator.servlet.ContentListServlet;
 import com.percussion.pso.paginator.servlet.IPSContentListItem;
-import com.percussion.pso.paginator.servlet.IPSItemLocationGenerator;
+import com.percussion.pso.paginator.servlet.IPSContentListItemLocationGenerator;
 import com.percussion.services.assembly.IPSAssemblyService;
 import com.percussion.services.assembly.IPSAssemblyTemplate;
 import com.percussion.services.catalog.PSTypeEnum;
@@ -72,7 +72,7 @@ public class ContentListServletTest {
         servlet.setAsm(asm);
         servlet.setCache(cache);
         servlet.setItemLocationGenerator(
-                new IPSItemLocationGenerator () {
+                new IPSContentListItemLocationGenerator () {
 
                     public String makeLocation(IPSContentListItem item) {
                         return "test_location";
