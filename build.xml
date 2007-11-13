@@ -84,7 +84,8 @@
 			<include name="org/**" />
 			<include name="javax/**" />	
 			<include name="com/percussion/pso/**"/>
-			<exclude name="log4j.properties" /> 
+			<exclude name="log4j.properties" />
+			<exclude name="log4j.xml" /> 
 			<include name="build.properties" /> 
 			<!-- <include name="readme.txt" /> -->
 		</jar>
@@ -118,7 +119,6 @@
 		<antcall target="javadoc" /> 
 		<zip destfile="${distfile}">						
 			<zipfileset dir="." includes="${jarname}" />
-			<zipfileset dir="${lib}" includes="PSOToolkit60.jar" prefix="lib" />
 			<zipfileset dir="Rx_Resources_Ephox/rx_resources/ephox" includes="**.*" 
 				prefix="Rx_Resources_Ephox/rx_resources/ephox"/>
 			

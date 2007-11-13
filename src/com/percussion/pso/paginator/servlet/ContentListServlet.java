@@ -57,7 +57,9 @@ public class ContentListServlet extends AbstractController {
     
     private static IPSCmsObjectMgr cms = null;
     
-    private static IPSAssemblyService asm = null;  
+    private static IPSAssemblyService asm = null; 
+    
+    private static IPSItemLocationGenerator itemLocationGenerator;
     
     private static Log log = LogFactory.getLog(ContentListServlet.class);
 
@@ -72,14 +74,21 @@ public class ContentListServlet extends AbstractController {
     private static final long serialVersionUID = 1289502L;
 
     private IPSPageExpander pageExpander = null;
+
+    private static IPSCacheAccess cache;
     
-    protected static void initStatics()
-    {
-       if(asm == null)
-       {
-       pub = PSPublisherServiceLocator.getPublisherService();       
-       cms = PSCmsObjectMgrLocator.getObjectManager();       
-       asm = PSAssemblyServiceLocator.getAssemblyService();
+    protected static void initStatics() {
+        if (asm == null) {
+            pub = PSPublisherServiceLocator.getPublisherService();
+            cms = PSCmsObjectMgrLocator.getObjectManager();
+            asm = PSAssemblyServiceLocator.getAssemblyService();
+            cache = PSCacheAccessLocator.getCacheAccess();
+            itemLocationGenerator = new IPSItemLocationGenerator() {
+
+                public String makeLocation(IPSContentListItem item) {
+                    return item.getLocation();
+                }
+            };
        }
     }
     /*
@@ -94,7 +103,6 @@ public class ContentListServlet extends AbstractController {
     throws ServletException, IOException {
        
         initStatics();
-        IPSCacheAccess cache = PSCacheAccessLocator.getCacheAccess();
         PSStopwatch sw = new PSStopwatch();
         sw.start();
         String siteid = request.getParameter(IPSHtmlParameters.SYS_SITEID);
@@ -197,7 +205,7 @@ public class ContentListServlet extends AbstractController {
            for (IPSContentListItem item : items)
            {
               formatContentListItem( f,  host, protocol,
-                    port, list, item);
+                    port, icontext, list, item);
            }
            f.writeCharacters("\n");
            if (maxresults > 0)
@@ -246,6 +254,7 @@ public class ContentListServlet extends AbstractController {
         }
         catch (Exception e)
         {
+            log.error("Error in generating paginated content list: " + e);
            response.setContentType("text/plain");
            PrintWriter w;
            try
@@ -269,6 +278,7 @@ public class ContentListServlet extends AbstractController {
      * @param host the server host name
      * @param protocol the protocol. Usually <code>HTTP</code> or <code>HTTPS</code>
      * @param port the port the server listens on.
+     * @param context for the assembly url
      * @param list the Content List definition. 
      * @param item the item to publish
      * @throws XMLStreamException
@@ -278,7 +288,7 @@ public class ContentListServlet extends AbstractController {
      */
     protected void formatContentListItem(
           XMLStreamWriter formatter,  String host, String protocol,
-          int port, IPSContentList list, IPSContentListItem item)
+          int port, int assemblyContext, IPSContentList list, IPSContentListItem item)
           throws XMLStreamException, PSPublisherException, PSAssemblyException, PSRequestParsingException
     {
        if (pub == null)
@@ -337,7 +347,7 @@ public class ContentListServlet extends AbstractController {
                PSTypeEnum.TEMPLATE, tid), false);
        String baseURL = pub.constructAssemblyUrl(host, port, protocol, item.getSiteId(), 
              item.getContentId(), folderguid, template, item.getFilter(),
-               item.getContext(), item.isPublish());
+               assemblyContext, item.isPublish());
         item.setAssemblyURL(baseURL);
         formatter.writeCharacters("\n  ");
         formatter.writeStartElement("contentitem");
@@ -363,7 +373,7 @@ public class ContentListServlet extends AbstractController {
         formatter.writeCharacters("\n      ");
         formatter.writeStartElement("location");
 
-        formatter.writeCharacters(item.getLocation());
+        formatter.writeCharacters(itemLocationGenerator.makeLocation(item));
         formatter.writeEndElement();
         formatter.writeEndElement();
         formatter.writeCharacters("\n    ");
@@ -460,5 +470,18 @@ public class ContentListServlet extends AbstractController {
    {
       ContentListServlet.pub = pub;
    }
+public static IPSCacheAccess getCache() {
+    return cache;
+}
+public static void setCache(IPSCacheAccess cache) {
+    ContentListServlet.cache = cache;
+}
+public static IPSItemLocationGenerator getItemLocationGenerator() {
+    return itemLocationGenerator;
+}
+public static void setItemLocationGenerator(
+        IPSItemLocationGenerator itemLocationGenerator) {
+    ContentListServlet.itemLocationGenerator = itemLocationGenerator;
+}
   
 }

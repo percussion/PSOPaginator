@@ -12,8 +12,14 @@
 	<classpathentry kind="lib" path="/Rhythmyx-Main/Tools/servlet/servlet.jar"/>
 	<classpathentry kind="lib" path="/Rhythmyx-Main/Tools/Commons/commons-jexl-1.1.1-patched.jar"/>
 	<classpathentry kind="lib" path="/Rhythmyx-Main/Tools/Commons/commons-lang-2.1.jar"/>
+	<classpathentry kind="lib" path="lib/hamcrest-core-1.1.jar"/>
+	<classpathentry kind="lib" path="lib/hamcrest-library-1.1.jar"/>
+	<classpathentry kind="lib" path="lib/jmock-2.2.0.jar"/>
+	<classpathentry kind="lib" path="lib/jmock-junit4-2.2.0.jar"/>
+	<classpathentry kind="lib" path="lib/xmlunit-1.1.jar"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/PSOToolkit60"/>
 	<classpathentry kind="lib" path="/Rhythmyx-Main/Tools/Spring/spring.jar"/>
 	<classpathentry kind="lib" path="/Rhythmyx-Main/Tools/Stax/stax-api-1.0.1.jar"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.junit.JUNIT_CONTAINER/4"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

@@ -37,9 +37,6 @@
 	<target name="copyJars">
 		<echo>Copying Jars</echo>
 		<copy file="${jarname}" todir="${RHYTHMYX.lib}" verbose="true" overwrite="true" />
-		<copy todir="${RHYTHMYX.lib}" verbose="true" overwrite="true">
-			<fileset dir="lib" />
-	    </copy>
 	</target>
 		
 	<target name="deploy" description="deploys the files to the correct locations">
