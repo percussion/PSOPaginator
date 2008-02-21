@@ -21,13 +21,15 @@
 	<dependencies>
 	  <dependency org="percussion" name="rhythmyx" rev="6.5"  />
 	  <!-- add any other dependencies here -->
+	    <dependency org="percussion" name="pso-toolkit" rev="6.5" /> 
+	   	<dependency org="apache" name="commons-jexl" rev="1.1.1-patched"  /> 
+	 	<dependency org="sun" name="javax-servlet" rev="2.4" />
+		<dependency org="stax" name="stax-api" rev="1.0.1"  />  
+	 
 	  <!-- make sure you have some unit tests -->
-	  <dependency org="percussion" name="pso-toolkit" rev="6.5" conf="test->*" /> 
+	
 	  <dependency org="jmock" name="jmock1" rev="1.1.0" conf="test->*" /> 
 	  <dependency org="jmock" name="jmock" rev="2.2.0" conf="test->*" /> 
-	  <dependency org="apache" name="commons-jexl" rev="1.1.1-patched" conf="test->*" /> 
-	  <dependency org="stax" name="stax-api" rev="1.0.1" conf="test->*" />  
 	  <dependency org="junit" name="junit" rev="4.1"  conf="test->*"/>
-	  <dependency org="sun" name="javax-servlet" rev="2.4"  conf="test->*"/>
-	</dependencies>
+ 	</dependencies>
 </ivy-module>
