@@ -1,4 +1,4 @@
-<project name="PSO Paginator" default="dist" basedir=".">
+<project name="PSO Paginator" default="dist" basedir="." xmlns:ivy="antlib:org.apache.ivy.ant">
 	<description>
        PSO Paginator code
     </description>
@@ -30,25 +30,64 @@
 	<property name="lib" location="lib"/>
 	<property name="bin" location="bin"/>	
 	<property name="apidoc" location="apidoc" />
+	
+	<!-- more relative paths.  Make sure these are not in Subversion --> 
+	<property name="ivylib" location="ivylib" /> 
+	<property name="apidoc" location="apidoc" />
+	
 	<!-- used for running Windows commands --> 
 	<property name="comspec" location="${env.ComSpec}"/>
 	<property name="cdrive" location="${env.USERPROFILE}"/> 
 	<!-- Rhythmyx classpath  --> 
-	<path id="rx.class.path"> 
-		 <fileset dir="${rx.lib}">
-		 	<include name="**.jar"/>
-		 	<exclude name="${jarname}"/>
-		 </fileset>		    	
-		 <fileset dir="${lib}" /> 
-		 <fileset dir="${jboss.lib}" /> 
-	</path>
 	
+		<!-- Rhythmyx classpath  --> 
+	<path id="rx.class.path"> 
+		 <fileset dir="${ivylib}">
+		 	<include name="**.jar"/>
+		 </fileset>
+		</path>
+		
+		
+
 
 	<target name="init">
 		<!-- Create the time stamp -->
 		<tstamp/>
 	</target>
 	
+		<!-- 
+	load the ivy configuration.  See ivysettings.xml 
+	-->
+	<target name="ivy-configure">
+	   <ivy:settings  />
+    </target>
+	
+	
+	<!-- resolve dependencies --> 
+	<target name="ivy-resolve" depends="ivy-configure" >
+	   <!-- if you have more configurations, you may need to change this line --> 
+	   <ivy:resolve conf="test"/> 
+	</target>
+	
+	<!-- retrieve all dependency JARs to the local ivylib folder --> 
+	<target name="ivy-retrieve" depends="ivy-resolve">
+	   <!-- if you have more configurations, you may need to change this line --> 
+	   <ivy:retrieve pattern="${ivylib}/[artifact].[ext]" />   	
+	</target>
+    
+    <!--
+	You should only publish this project to Ivy if it produces
+	JARs that will be used by other projects.   
+    -->
+	<!-- Uncomment this target to enable publishing
+	<target name="ivy-publish" depends="ivy-resolve"  >
+		<ivy:publish resolver="foo-shared-sftp" forcedeliver="true"  
+			pubrevision="1.0" overwrite="true" 
+			conf="default" status="integration" >
+			<artifacts pattern="${lib}/[artifact]-[revision].[ext]" /> 
+		</ivy:publish>
+	</target>
+	-->
 	
 	<target name="compile" description="compile the source ">
 		<!-- Compile the java code from ${src} into ${bin} -->
@@ -135,6 +174,14 @@
 			<!--<fileset dir="Rhythmyx" includes="**"/>-->
 		</zip>
 			
+	</target>
+		<!-- 
+	clean the ivy cache and throw away any local copies of downloaded JARs  
+	-->
+	<target name="ivy-clean" depends="ivy-configure">
+		<ivy:cleancache />
+		<delete dir="${ivylib}" /> 
+		<mkdir dir="${ivylib}" />
 	</target>
 	<target name="clean" description="clean up">
 		<delete dir="${bin}"/>
