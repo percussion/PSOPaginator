@@ -3,7 +3,7 @@ package com.percussion.pso.paginator;
 public class HTMLTag 
 {	
 	private String tagName = "";
-	private String tagText = "";
+	private StringBuilder tagText = new StringBuilder();
 	private int openedInPage = 0; // Page number where the tag was  opened
 	private int closedInPage = 0;  // Page number where the tag was closed
 	private boolean empty = true; //does tag have content 
@@ -23,13 +23,19 @@ public class HTMLTag
 	 * @return Returns the tagText.
 	 */
 	public String getTagText() {
-		return tagText;
+		return tagText.toString();
 	}
 	/**
 	 * @param tagText The tagText to set.
 	 */
-	public void setTagText(String tagText) {
-		this.tagText = tagText;
+	public void setTagText(String text) {
+		tagText = new StringBuilder(); 
+	    addTagText(text);	
+	}
+	
+	public void addTagText(String text)
+	{
+	   tagText.append(text);
 	}
 	/**
 	 * @return Returns the closedInPage.

@@ -107,7 +107,9 @@ public class HTMLPaginator extends DefaultHandler
     		// Look for tag and attributes
 			String eName = lName;
 			eName = qName; 		        
-			String resTag = "<" + eName;		        
+			StringBuilder resTag = new StringBuilder();  
+			resTag.append("<");
+			resTag.append(eName);		        
 			if (attrs != null) 
 			{
 			    for (int i = 0; i < attrs.getLength(); i++) {
@@ -115,13 +117,17 @@ public class HTMLPaginator extends DefaultHandler
 			        if ("".equals(aName)) 
 			        	aName = attrs.getQName(i);
 			        // Set text with attributes
-			        resTag += " " + aName + "=\"" + attrs.getValue(i) + "\"";
+			        resTag.append(" ");
+			        resTag.append(aName);
+			        resTag.append("=\"");
+			        resTag.append(attrs.getValue(i));
+			        resTag.append("\"");
 			    }
 			}                	
-			//resTag += ">";
+			
 
 		   // Save in stack
-		   addNewHTMLTag(eName, resTag, numPages, 0);
+		   addNewHTMLTag(eName, resTag.toString(), numPages, 0, true);
     	}
     	catch(Exception e)
     	{
@@ -157,8 +163,7 @@ public class HTMLPaginator extends DefaultHandler
 	    		if(h.isEmpty())
 	    		{
 	    		   foundEmpty = true; 
-	    		   String currentText = h.getTagText(); 
-	               h.setTagText(currentText + " />");
+	    		   h.addTagText(" />"); 
 	               h.setEmpty(false);
 	    		}
 	    		break;
@@ -168,7 +173,7 @@ public class HTMLPaginator extends DefaultHandler
         // Closing tag
         if(!foundEmpty)
         {
-           addNewHTMLTag(qName, "</" + qName + ">", openedInPage, numPages);
+           addNewHTMLTag(qName, "</" + qName + ">", openedInPage, numPages, false);
         }
     }
 
@@ -177,22 +182,16 @@ public class HTMLPaginator extends DefaultHandler
     {
     	// Text nodes
     	String s = new String(buf, offset, len);
-    	addNewHTMLTag("", s, numPages, numPages);    	
+    	addNewHTMLTag("", s, numPages, numPages, false);    	
 	 }
 
-    private void addNewHTMLTag(String tagName, String tagText, int openedInPage, int closedInPage)
+    private void addNewHTMLTag(String tagName, String tagText, int openedInPage, int closedInPage, boolean empty)
     {
     	// Add a new tag to the stack
     	HTMLTag h1 =  new HTMLTag();
+    	h1.setEmpty(empty); 
 		h1.setTagName(tagName);
-		if(tagName == null || tagName.length() == 0)
-		{  //it's a text node, it cannot be empty
-		   h1.setEmpty(false); 
-		}
-		if(tagText.startsWith("</"))
-		{ //it's a close tag, it is not empty
-		   h1.setEmpty(false); 
-		}
+		
 		h1.setTagText(tagText);
 		h1.setOpenedInPage(openedInPage);
 		h1.setClosedInPage(closedInPage); 
