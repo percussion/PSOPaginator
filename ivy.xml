@@ -31,5 +31,6 @@
 	  <dependency org="jmock" name="jmock1" rev="1.1.0" conf="test->*" /> 
 	  <dependency org="jmock" name="jmock" rev="2.2.0" conf="test->*" /> 
 	  <dependency org="junit" name="junit" rev="4.1"  conf="test->*"/>
+	  <dependency org="springframework" name="spring-mock" rev="2.0" conf="test->*" /> 
  	</dependencies>
 </ivy-module>

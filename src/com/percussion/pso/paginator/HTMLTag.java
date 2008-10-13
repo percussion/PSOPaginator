@@ -6,7 +6,7 @@ public class HTMLTag
 	private String tagText = "";
 	private int openedInPage = 0; // Page number where the tag was  opened
 	private int closedInPage = 0;  // Page number where the tag was closed
-	
+	private boolean empty = true; //does tag have content 
 	/**
 	 * @return Returns the tagName.
 	 */
@@ -55,4 +55,19 @@ public class HTMLTag
 	public void setOpenedInPage(int openedInPage) {
 		this.openedInPage = openedInPage;
 	}
+   /**
+    * @return the empty
+    */
+   public boolean isEmpty()
+   {
+      return empty;
+   }
+   /**
+    * @param empty the empty to set
+    */
+   public void setEmpty(boolean empty)
+   {
+      this.empty = empty;
+   }
+	
 }

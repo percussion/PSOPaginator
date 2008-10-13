@@ -139,7 +139,6 @@
 		<property name="build.number" value="test build" /> 
 		<antcall target="jarbuilder"/>
 		<copy file="${jarname}" todir="${rx.lib}" verbose="true" />
-		<copy file="${lib}/PSOToolkit60.jar" todir="${rx.lib}" verbose="true" />
 		<copy todir="${rx.spring}" verbose="true">
 			<fileset dir="spring" />
 		</copy>

@@ -118,7 +118,7 @@ public class HTMLPaginator extends DefaultHandler
 			        resTag += " " + aName + "=\"" + attrs.getValue(i) + "\"";
 			    }
 			}                	
-			resTag += ">";
+			//resTag += ">";
 
 		   // Save in stack
 		   addNewHTMLTag(eName, resTag, numPages, 0);
@@ -128,6 +128,8 @@ public class HTMLPaginator extends DefaultHandler
     		log.error(e.toString());
     	}
     }
+    
+    @SuppressWarnings("unchecked")
     public void endElement(String namespaceURI,
                            String sName, 
                            String qName
@@ -140,6 +142,7 @@ public class HTMLPaginator extends DefaultHandler
     	// Look for the most recent not-yet-closed tag inserted.
         ListIterator it = htmlTags.listIterator(htmlTags.size());
         
+        boolean foundEmpty = false; 
         while ( it.hasPrevious() )
         {
         	HTMLTag h = (HTMLTag) it.previous();    	
@@ -147,16 +150,26 @@ public class HTMLPaginator extends DefaultHandler
     		// Check if is already closed
 	    	if ( h.getClosedInPage() == 0 ) // Not yet closed
 	    	{
-	    		// Ser current page as the page where tag was closed
+	    		// Set current page as the page where tag was closed
 	    		h.setClosedInPage(numPages);
 	    		// Save the value for the closing tag
-	    		openedInPage = h.getOpenedInPage();  
+	    		openedInPage = h.getOpenedInPage();
+	    		if(h.isEmpty())
+	    		{
+	    		   foundEmpty = true; 
+	    		   String currentText = h.getTagText(); 
+	               h.setTagText(currentText + " />");
+	               h.setEmpty(false);
+	    		}
 	    		break;
 	    	}
         }
         
         // Closing tag
-        addNewHTMLTag(qName, "</" + qName + ">", openedInPage, numPages);
+        if(!foundEmpty)
+        {
+           addNewHTMLTag(qName, "</" + qName + ">", openedInPage, numPages);
+        }
     }
 
     public void characters(char buf[], int offset, int len)
@@ -172,9 +185,27 @@ public class HTMLPaginator extends DefaultHandler
     	// Add a new tag to the stack
     	HTMLTag h1 =  new HTMLTag();
 		h1.setTagName(tagName);
+		if(tagName == null || tagName.length() == 0)
+		{  //it's a text node, it cannot be empty
+		   h1.setEmpty(false); 
+		}
+		if(tagText.startsWith("</"))
+		{ //it's a close tag, it is not empty
+		   h1.setEmpty(false); 
+		}
 		h1.setTagText(tagText);
 		h1.setOpenedInPage(openedInPage);
 		h1.setClosedInPage(closedInPage); 
+		if(!htmlTags.isEmpty())
+		{
+		   HTMLTag parent = htmlTags.peek();
+		   if(parent.isEmpty())
+		   {
+		      parent.setEmpty(false);
+		      String currentText = parent.getTagText(); 
+		      parent.setTagText(currentText + ">");
+		   }
+		}
 		htmlTags.push(h1);
     }
     

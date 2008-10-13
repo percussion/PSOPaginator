@@ -112,8 +112,9 @@ public class Paginator extends PSJexlUtilBase implements IPSJexlExpression
 
         private String getPageLink(int pageno) {
             int i =  pageno - 1;
-            if (i < 0 || pageLinks == null || pageLinks.size() <= i ) return null;
-            else return pageLinks.get(i);
+            if (i < 0 || pageLinks == null || pageLinks.size() <= i ) 
+               return null;
+            return pageLinks.get(i);
         }
         public String getNextPageLink() {
             return getPageLink(getCurrentPageNo() + 1);

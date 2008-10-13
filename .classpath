@@ -2,24 +2,55 @@
 <classpath>
 	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
-	<classpathentry kind="con" path="org.eclipse.jdt.junit.JUNIT_CONTAINER/3.8.1"/>
-	<classpathentry combineaccessrules="false" kind="src" path="/Rhythmyx-Main"/>
-	<classpathentry kind="lib" path="lib/jmock-1.1.0.jar"/>
-	<classpathentry kind="lib" path="lib/jmock-cglib-1.1.0.jar"/>
-	<classpathentry kind="lib" path="/Rhythmyx-Main/Tools/Commons/commons-logging-1.1.jar"/>
-	<classpathentry kind="lib" path="/Rhythmyx-Main/Tools/log4j/log4j-1.2.14.jar"/>
-	<classpathentry kind="lib" path="/Rhythmyx-Main/Tools/JSR-170/jcr-1.0.jar"/>
-	<classpathentry kind="lib" path="/Rhythmyx-Main/Tools/servlet/servlet.jar"/>
-	<classpathentry kind="lib" path="/Rhythmyx-Main/Tools/Commons/commons-jexl-1.1.1-patched.jar"/>
-	<classpathentry kind="lib" path="/Rhythmyx-Main/Tools/Commons/commons-lang-2.1.jar"/>
-	<classpathentry kind="lib" path="lib/hamcrest-core-1.1.jar"/>
-	<classpathentry kind="lib" path="lib/hamcrest-library-1.1.jar"/>
-	<classpathentry kind="lib" path="lib/jmock-2.2.0.jar"/>
-	<classpathentry kind="lib" path="lib/jmock-junit4-2.2.0.jar"/>
-	<classpathentry kind="lib" path="lib/xmlunit-1.1.jar"/>
-	<classpathentry combineaccessrules="false" kind="src" path="/PSOToolkit60"/>
-	<classpathentry kind="lib" path="/Rhythmyx-Main/Tools/Spring/spring.jar"/>
-	<classpathentry kind="lib" path="/Rhythmyx-Main/Tools/Stax/stax-api-1.0.1.jar"/>
-	<classpathentry kind="con" path="org.eclipse.jdt.junit.JUNIT_CONTAINER/4"/>
+	<classpathentry kind="lib" path="ivylib/activation.jar"/>
+	<classpathentry kind="lib" path="ivylib/antlr.jar"/>
+	<classpathentry kind="lib" path="ivylib/cglib-nodep.jar"/>
+	<classpathentry kind="lib" path="ivylib/commons-beanutils.jar"/>
+	<classpathentry kind="lib" path="ivylib/commons-betwixt-0.7RC2.jar"/>
+	<classpathentry kind="lib" path="ivylib/commons-codec.jar"/>
+	<classpathentry kind="lib" path="ivylib/commons-collections.jar"/>
+	<classpathentry kind="lib" path="ivylib/commons-dbcp.jar"/>
+	<classpathentry kind="lib" path="ivylib/commons-fileupload.jar"/>
+	<classpathentry kind="lib" path="ivylib/commons-httpclient.jar"/>
+	<classpathentry kind="lib" path="ivylib/commons-jexl.jar"/>
+	<classpathentry kind="lib" path="ivylib/commons-lang.jar"/>
+	<classpathentry kind="lib" path="ivylib/commons-logging.jar"/>
+	<classpathentry kind="lib" path="ivylib/commons-pool.jar"/>
+	<classpathentry kind="lib" path="ivylib/concurrent.jar"/>
+	<classpathentry kind="lib" path="ivylib/dom4j.jar"/>
+	<classpathentry kind="lib" path="ivylib/ejb3-persistence.jar"/>
+	<classpathentry kind="lib" path="ivylib/hamcrest-core.jar"/>
+	<classpathentry kind="lib" path="ivylib/hamcrest-library.jar"/>
+	<classpathentry kind="lib" path="ivylib/hibernate3.jar"/>
+	<classpathentry kind="lib" path="ivylib/hibernate-annotations.jar"/>
+	<classpathentry kind="lib" path="ivylib/javax.servlet.jar"/>
+	<classpathentry kind="lib" path="ivylib/jcr.jar"/>
+	<classpathentry kind="lib" path="ivylib/jdbc2_0-stdext.jar"/>
+	<classpathentry kind="lib" path="ivylib/jmock.jar"/>
+	<classpathentry kind="lib" path="ivylib/jmock1.jar"/>
+	<classpathentry kind="lib" path="ivylib/jmock-cglib.jar"/>
+	<classpathentry kind="lib" path="ivylib/jmock-junit3.jar"/>
+	<classpathentry kind="lib" path="ivylib/jmock-junit4.jar"/>
+	<classpathentry kind="lib" path="ivylib/jta.jar"/>
+	<classpathentry kind="lib" path="ivylib/junit.jar"/>
+	<classpathentry kind="lib" path="ivylib/percbeans.jar"/>
+	<classpathentry kind="lib" path="ivylib/PSOToolkit.jar"/>
+	<classpathentry kind="lib" path="ivylib/rhythmyx.jar"/>
+	<classpathentry kind="lib" path="ivylib/rxclient.jar"/>
+	<classpathentry kind="lib" path="ivylib/rxextensions.jar"/>
+	<classpathentry kind="lib" path="ivylib/rxff.jar"/>
+	<classpathentry kind="lib" path="ivylib/rxinstall.jar"/>
+	<classpathentry kind="lib" path="ivylib/rxmisctools.jar"/>
+	<classpathentry kind="lib" path="ivylib/rxpublisher.jar"/>
+	<classpathentry kind="lib" path="ivylib/rxserver.jar"/>
+	<classpathentry kind="lib" path="ivylib/rxservices.jar" sourcepath="D:/p4/6.5.2/services/src"/>
+	<classpathentry kind="lib" path="ivylib/rxtablefactory.jar"/>
+	<classpathentry kind="lib" path="ivylib/rxutils.jar"/>
+	<classpathentry kind="lib" path="ivylib/rxwebservices.jar"/>
+	<classpathentry kind="lib" path="ivylib/saxon.jar"/>
+	<classpathentry kind="lib" path="ivylib/spring.jar"/>
+	<classpathentry kind="lib" path="ivylib/stax-api.jar"/>
+	<classpathentry kind="lib" path="ivylib/Tidy.jar"/>
+	<classpathentry kind="lib" path="ivylib/spring-mock.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
