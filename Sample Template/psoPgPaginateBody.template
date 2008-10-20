@@ -1,0 +1,104 @@
+  <assemblytemplate id="1">
+    <guid>0-4-567</guid>
+    <active-assembly-type>Normal</active-assembly-type>
+    <assembler>Java/global/percussion/assembly/velocityAssembler</assembler>
+    <assembly-url>../assembler/render</assembly-url>
+    <bindings>
+      <binding id="2">
+        <execution-order>1</execution-order>
+        <expression>$sys.item.getProperty("body").String </expression>
+        <id>0</id>
+        <jexl-script id="3">
+          <text>$sys.item.getProperty("body").String;</text>
+        </jexl-script>
+        <variable>$body</variable>
+      </binding>
+      <binding id="4">
+        <execution-order>2</execution-order>
+        <expression>$user.paginator.getBodyPageCount($body) </expression>
+        <id>0</id>
+        <jexl-script id="5">
+          <text>$user.paginator.getBodyPageCount($body);</text>
+        </jexl-script>
+        <variable>$pagecount</variable>
+      </binding>
+      <binding id="6">
+        <execution-order>3</execution-order>
+        <expression>if(!$sys.params.pageno[0]) {$p = "1";} else {$p = $sys.params.pageno[0];} $p </expression>
+        <id>0</id>
+        <jexl-script id="7">
+          <text>if(!$sys.params.pageno[0]) {$p = "1";} else {$p = $sys.params.pageno[0];} $p;</text>
+        </jexl-script>
+        <variable>$pageno</variable>
+      </binding>
+      <binding id="8">
+        <execution-order>4</execution-order>
+        <expression>$user.paginator.getBodyPage($body, $pageno)</expression>
+        <id>0</id>
+        <jexl-script id="9">
+          <text>$user.paginator.getBodyPage($body, $pageno);</text>
+        </jexl-script>
+        <variable>$bodypage</variable>
+      </binding>
+    </bindings>
+    <charset>UTF-8</charset>
+    <content-ids/>
+    <description>This is an example of how to use the paginator on a field like body that uses EditLive</description>
+    <global-template/>
+    <global-template-usage>Default</global-template-usage>
+    <label>P - Paginate Body</label>
+    <location-prefix/>
+    <location-suffix/>
+    <mime-type>text/html</mime-type>
+    <name>psoPgPaginateBody</name>
+    <output-format>Page</output-format>
+    <publish-when>Default</publish-when>
+    <site-ids>
+      <site-id>301</site-id>
+      <site-id>303</site-id>
+    </site-ids>
+    <style-sheet-path/>
+    <template>&lt;html&gt;
+	&lt;head&gt;
+		&lt;title&gt;Demo&lt;/title&gt;
+	&lt;/head&gt;
+	&lt;body&gt;
+		
+		#set($pageNoAsString = $pageno)
+		#set($pageNoAsInteger = $tools.math.toInteger($pageNoAsString))
+		#set($previousPage = $pageNoAsInteger - 1)
+		#set($url = "$rx.location.generate($sys.assemblyItem,'hsxPgPaginateBody')&amp;pageno=$previousPage")		
+
+		#if ($pageNoAsInteger == 1)
+			&lt;&lt; Previous
+		#else
+			&lt;a href="$url"&gt;&lt;&lt; Previous&lt;/a&gt;
+		#end
+		
+		#foreach($pageNum in [1..$pagecount])
+			#set($url = "$rx.location.generate($sys.assemblyItem,'hsxPgPaginateBody')&amp;pageno=$pageNum")
+			#set($pageNoAsString = $pageno)
+			#set($pageNoAsInteger = $tools.math.toInteger($pageNoAsString))
+			
+			#if ($pageNoAsInteger == $pageNum)
+				$pageNum
+			#else
+				&lt;a href="$url"&gt;$pageNum&lt;/a&gt;
+			#end
+		#end
+		
+		#set($nextPage = $pageNoAsInteger + 1)		
+		#set($url = "$rx.location.generate($sys.assemblyItem,'hsxPgPaginateBody')&amp;pageno=$nextPage")		
+		#if ($pageNoAsInteger == $pagecount)
+			Next &gt;&gt;
+		#else
+			&lt;a href="$url"&gt;Next &gt;&gt;&lt;/a&gt;
+		#end
+
+		$bodypage
+	&lt;/body&gt;
+&lt;/html&gt;</template>
+    <template-slot-ids/>
+    <template-type>Local</template-type>
+    <variant>false</variant>
+  </assemblytemplate>
