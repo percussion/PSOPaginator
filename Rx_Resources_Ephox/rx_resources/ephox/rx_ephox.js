@@ -34,6 +34,22 @@
  var isEditLive = true;
 
 /**
+ * The single editlive instance
+ */
+ var _editLiveInstance = null;
+
+ /**
+  * Currently active EditLive section
+  */
+  var _activeEditLiveSectionName = "";
+
+  /**
+   * Flag indicating the <p> tag is inserted before content
+   * used by _insertPTagsPart2
+   */
+  var _isPreFlag = false;
+
+/**
  * A flag indicating, whether or not the current browser type is Netscape. 
  * <code>true</code> if Netscape, false otherwise.
  */
@@ -73,6 +89,11 @@ if (navigator.platform == "MacPPC")
    isMac = true;
 }
 
+function trim(str)
+{
+   return str.replace(/^\s+|\s+$/g,"");
+}
+
 /**
  * Data Object.  Holds property values written to maintain state.
  */
@@ -85,11 +106,6 @@ dataObject.windowRef = "";
 dataObject.editorObject = ""; 
 
 
-var ephoxText = ""; 
-function ephoxSelectedText(incoming)
-{
-    ephoxText = incoming; 
-}
 /**
 * The array of all editors on the page.  There will be one entry per editor...
 *
@@ -101,20 +117,9 @@ function ephoxSelectedText(incoming)
 *  editor.inlineVariantSlot = ""; 
 * 
 */
-
 var _rxAllEditors = new Array();
 
-function getEditor(sEditorName) 
-{
-   
-   for(var i=0; i < _rxAllEditors.length; i++)
-     {
-       if(_rxAllEditors[i].name == sEditorName)
-          return(_rxAllEditors[i]);
-     }
-   alert("Editor " + sEditorName + " not found!!!!"); 
-   return("");  
-}
+
 /** 
 * CMS Link function 
 * 
@@ -123,23 +128,33 @@ function getEditor(sEditorName)
 /**
  * Creates CMS search box for inline links and CMS Image creation:
  */
-function createSearchBox(inlineslotid, sEditorName, type) 
+function createSearchBox(type) 
 {
    
-   var editor = getEditor(sEditorName);
-   var ephox = editor.objectref; 
- 
-   dataObject.editorObject = ephox; 
+   var meta = _getEditSectionMeta(_activeEditLiveSectionName); 
+   var inlineslotid = -1;
+   if(type == "rxhyperlink")
+	{	
+	   inlineslotid = meta.inlineLinkSlot;
+	}
+   else if(type == "rximage")
+	{
+	   inlineslotid = meta.inlineImageSlot;
+	}
+	else if(type == "rxvariant")
+	{
+		inlineslotid = meta.inlineVariantSlot;
+	}
+
+   dataObject.editorObject = _editLiveInstance; 
    dataObject.searchType = type; 
    dataObject.slotid = inlineslotid; 
    
-   ephox.GetSelectedText("ephoxSelectedText");
-   setTimeout("launchSearchBox()",350); 
+   _editLiveInstance.GetSelectedText("launchSearchBox");
 }
 
-function launchSearchBox()
+function launchSearchBox(selectedText)
    {
-   var selectedText =  ephoxText; 
    var inlineslotid = dataObject.slotid;
   
    //Update the inlinelinksearch form elements
@@ -244,20 +259,10 @@ function isStringValid(str)
  * Creates link to non Rhythmyx managed element.
  * @param sEditorName - must not be <code>null</code> or empty.
  */
-function createExternalReference(sEditorName)
-{
-   if(sEditorName == null || sEditorName.length == 0)
-   {
-      alert("Please notify the Rhythmyx administrator: " + 
-      "ERROR: createExternalReference - received null values");
-      return;
-   } 
-   var editor = getEditor(sEditorName);
-   var ephox = editor.objectref; 
- 
-   dataObject.editorObject = ephox; 
-   ephox.GetSelectedText("ephoxSelectedText");
-   setTimeout("launchPromptBox()",350); 
+function createExternalReference()
+{ 
+   dataObject.editorObject = _editLiveInstance; 
+   _editLiveInstance.GetSelectedText("launchPromptBox");
 }
 
 /**
@@ -267,57 +272,33 @@ function createExternalReference(sEditorName)
  * @param isPreContent - determines if the P tags come before
  * or after the existing content.
  */
-function _insertPTags(sEditorName, isPreContent)
-{
-   if(sEditorName == null || sEditorName.length == 0)
-      {
-         alert("Please notify the Rhythmyx administrator: " + 
-         "ERROR: _insertPTags - received null values");
-         return;
-      } 
-      var editor = getEditor(sEditorName);
-      var ephox = editor.objectref; 
-    
-   dataObject.editorObject = ephox;
-   ephox.GetBody('ephoxSelectedText');
-   setTimeout("_insertPTagsPart2("+ isPreContent +")",350);
+function _insertPTags(isPreContent)
+{    
+   _isPreFlag = isPreContent;
+   _editLiveInstance.GetBody("_insertPTagsPart2");
 }
 
-function _insertPTagsPart2(isPreContent)
+function _insertPTagsPart2(selectedText)
 {
-   var selectedText =  ephoxText;
-   var ephox = dataObject.editorObject;
    var ptags = "<p></p>";
    var modifedContent = "";
    if(isPreContent)
       modifiedContent = ptags + ephoxText;
    else
       modifiedContent = ephoxText + ptags;
-   ephox.setBody(escape(modifiedContent));   
+   _editLiveInstance.setBody(encodeURIComponent(modifiedContent));
+   
+   
 }
 
-function _insertPageBreak(sEditorName, isPreContent)
+function _insertPageBreak()
+{   
+   _editLiveInstance.InsertHTMLAtCursor("<?pageBreak?>");
+}
+
+function launchPromptBox(selectedText)
 {
-   if(sEditorName == null || sEditorName.length == 0)
-      {
-         alert("Please notify the Rhythmyx administrator: " + 
-         "ERROR: _insertPageBreak - received null values");
-         return;
-      } 
-      var editor = getEditor(sEditorName);
-      var ephox = editor.objectref; 
     
-   dataObject.editorObject = ephox;
-   ephox.InsertHTMLAtCursor("<?pageBreak?>");
-}
-
-
-
-function launchPromptBox()
-{
-   var selectedText =  ephoxText; 
-
-  
    var str=prompt("Enter link location (e.g. http://www.yahoo.com):", "http:\/\/");
    buildUrl(selectedText, str );
 }
@@ -416,12 +397,12 @@ function RxEphoxHelp()
 }
 
 
-function isEphoxControlDirty(sEditorName)
-{
-   
-    var ephoxApplet = PSGetApplet(self, sEditorName + "_elj");
-    return ephoxApplet.isDirty();	
-  
+function isEphoxControlDirty()
+{   
+    var ephoxApplet = _getEditLiveApplet();
+	if(ephoxApplet == null || ephoxApplet == undefined)
+		return false;
+    return ephoxApplet.isDirty();  
 }
 
 /*
@@ -432,45 +413,74 @@ function isEphoxControlDirty(sEditorName)
  */
 function escapeSpecial(str)
 {
-   var encoded = escape(str);
+   var encoded = encodeURIComponent(str);
    encoded = encoded.replace(/\%a0/ig, "%26nbsp;");
    return encoded;
-
 }
 
 /*
-  Loops through the EditLive editor array and moves the controls contents
-  into each appropriate hidden field.
+ Retrieve the editlive doc. Also checks to see
+ if it should be considered empty and returns it as really empty
+ instead of <p>&#160</p>.
 */
-function rxEphoxPreSubmit()
+function getEphoxDocument(sEditorName)
 {
    
-   var editorName = "";
-   var ephoxApplet = null;
-   var hiddenField = null;
-   for(var i=0; i < _rxAllEditors.length; i++)
-   {
-          editorName = _rxAllEditors[i].name;
-          // Get applet
-          ephoxApplet = PSGetApplet(self, editorName + "_elj");
-          if(ephoxApplet == null || ephoxApplet == undefined)
-          {
-             alert("Unable to retrieve EditLive Applet: " + editorName + "_elj.");
-          }
-          else
-          {
-             //Get hidden field and set value
-             hiddenField = document.getElementById(editorName);
-             if(hiddenField == null || hiddenField == undefined)
-	     {
-	        alert("Unable to retrieve EditLive hidden field: " + editorName + ".");
-             }
-             else
-             {
-                hiddenField.value = ephoxApplet.getDocument();
-             }
-          }
-   }
+   var doc = _editLiveInstance.getContentForEditableSection(
+	    _getSectionDivNameByFieldName(sEditorName));
+   if(rxIsEditLiveDocEmpty(doc))
+	   return "";
+   return doc;
+}
+
+/*
+ Returns the content between the <body> tags in 
+ the passed in Ephox document. 
+*/
+function rxGetEphoxBodyContent(doc)
+{
+   var lDoc = doc.toLowerCase();
+   var sBodyPos = lDoc.indexOf("<body");
+   if(sBodyPos == -1)
+	   return doc;
+   var eBodyPos = lDoc.indexOf(">", sBodyPos + 5);
+   if(eBodyPos == -1) 
+	   return doc;
+   var cBodyPos = lDoc.lastIndexOf("</body>");
+   if(cBodyPos == -1)
+	   return doc;
+   return doc.substring(eBodyPos + 1, cBodyPos);
+}
+
+/*
+ Checks to see if Editlive should be considered empty.
+ Is empty if the body contains:
+ <p></p>
+ <p>&#160;</p>
+ <p>&nbsp;</p>
+ &nbsp;
+ &#160;
+*/
+function rxIsEditLiveDocEmpty(doc)
+{
+	var body = 
+		trim(rxGetEphoxBodyContent(doc) + "").toLowerCase();
+    var emptyStatements = 
+		[
+		   "",
+	       "<p><p>",
+		   "<p>&#160;</p>",
+		   "<p>&nbsp;</p>",
+		   "&nbsp;",
+		   "&#160;"
+		];
+     for(idx in emptyStatements)
+	{
+       if(body == emptyStatements[idx])
+		   return true;
+	}
+	return false;
+
 }
  
 /*
@@ -498,5 +508,159 @@ function rxEphoxHandleEditorInitComplete()
       if(submitButton != null && submitButton != undefined)
          submitButton.disabled = false;
    }
+} 
+
+/**
+ *  Used to initialize the single editlive instance. This should only
+ *  called after the end FORM tag that encloses the editable div's.
+ */
+function _initializeEditLiveInstance()
+{
+   _editLiveInstance = new EditLiveJava("_editLiveInstance", "100%", "100%"); 
+   _editLiveInstance.setDownloadDirectory("../rx_resources/ephox/editlivejava");
+   _editLiveInstance.setStyles(escape("div.rx_ephox_inlinevariant {border: solid #c0c0c0 1px;}"));
+   _editLiveInstance.setMinimumJREVersion("1.4.2");
+   _editLiveInstance.setAutoSubmit(false);
+   _editLiveInstance.setOnInitComplete("rxEphoxHandleEditorInitComplete");
+   __addAllEditLivePlugins();
+   //_editLiveInstance.disableObviousEditableSections(); // Uncomment to disable the mouse over pencil
+   // Add all editable DIV's
+   for(var i=0; i < _rxAllEditors.length; i++)
+   {
+      _editLiveInstance.addEditableSection(_getSectionDivNameByFieldName(_rxAllEditors[i].name));
+   }
+
+}
+
+/**
+ * Handles some setup when an editable DIV section is clicked.
+ */
+function _onclickEditLiveSection(name, locale, isReadOnly)
+{
+   _activeEditLiveSectionName = name;
+   var meta = _getEditSectionMeta(name);
+   _editLiveInstance.setLocale(locale.toUpperCase().substr(0,2));
+   _editLiveInstance.setConfigurationFile(meta.config);
+   _editLiveInstance.setReadOnly(isReadOnly);
+}
+
+/**
+ * Callback to launch the inline link search
+ */
+function RxEphoxInlineLink()
+{
+   createSearchBox("rxhyperlink"); 
+}
+
+/**
+ * Callback to launch the inline image search
+ */
+function RxEphoxImageLink()
+{
+   createSearchBox("rximage"); 
+}
+
+/**
+ * Callback to launch the inline variant search
+ */
+function RxEphoxVariantLink()
+{   
+   createSearchBox("rxvariant");
+}
+
+/**
+ * Callback to insert <p> tags at the top of the current
+ * loaded document.
+ */
+function RxEphoxInsertPTagsA()
+{
+   _insertPTags(true); 
+}
+
+/**
+ * Callback to insert <p> tags at the bottom of the current
+ * loaded document.
+ */
+function RxEphoxInsertPTagsB()
+{
+   _insertPTags(false); 
+}
+
+function RxEphoxInsertPageBreak()
+{
+   _insertPageBreak();
+}
+
+/**
+ * Get the meta data object for the specified section
+ */
+function _getEditSectionMeta(sectionName)
+{
+   
+   for(var i=0; i < _rxAllEditors.length; i++)
+     {
+       if(_rxAllEditors[i].name == sectionName)
+          return(_rxAllEditors[i]);
+     }
+   alert("Editor section meta data for [" + sectionName + "] not found!!!!"); 
+   return("");  
+}
+
+/**
+ * Returns the div section name from the field name.
+ */
+function _getSectionDivNameByFieldName(fieldName)
+{
+   return fieldName + "___div";
+}
+/**
+ * Activates a section as specified by its index in the page
+ */
+function _activateEditLiveSection(index)
+{
+     var name = _rxAllEditors[index].name;
+	 var div = document.getElementById(_getSectionDivNameByFieldName(name));
+	 div.onclick();
+}
+
+/**
+ * Gets a reference to the EditLive Applet instance.
+ */
+function _getEditLiveApplet()
+{
+   return PSGetApplet(self, "_editLiveInstance_elj");
+}
+
+/*
+  Loops through the EditLive editor array and moves the controls contents
+  into each appropriate hidden field.
+*/
+function rxEphoxPreSubmit()
+{
+   
+   var editorName = "";
+   var ephoxApplet = null;
+   var hiddenField = null;
+   for(var i=0; i < _rxAllEditors.length; i++)
+   {
+      editorName = _rxAllEditors[i].name;
+      
+      
+	  //Get hidden field and set value
+	  hiddenField = document.getElementById(editorName);
+	  if(hiddenField == null || hiddenField == undefined)
+	  {
+	 	 alert("Unable to retrieve EditLive hidden field: " + editorName + ".");
+	  }
+	  else
+	  {
+		 hiddenField.value = getEphoxDocument(editorName);
+	  }
+      
+   }  
 }
  
+
+
+
+
