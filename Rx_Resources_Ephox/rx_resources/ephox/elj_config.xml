@@ -129,7 +129,7 @@
          <menuItem name="HLink"/>         
          <customMenuItem action="raiseEvent" imageURL="../rx_resources/ephox/images/slink.gif" name="CMSLink" rxconfig="yes" text="Insert Rhythmyx inline link" value="RxEphoxInlineLink"/>
          <customMenuItem action="raiseEvent" imageURL="../rx_resources/ephox/images/variant.gif" name="CMSVariant" rxconfig="yes" text="Insert Rhythmyx Template" value="RxEphoxVariantLink"/>
-         <customMenuItem action="raiseEvent" imageURL="../rx_resources/ephox/images/insertBreak.gif" name="InsertPageBreak" rxconfig="yes" text="Insert Page Break" value="RxEphoxInsertPageBreak"/>
+         <customMenuItem action="raiseEvent" imageURL="../rx_resources/ephox/images/insertBreak.gif" name="InsertPageBreak" text="Insert Page Break" value="RxEphoxInsertPageBreak"/>
          <customMenuItem action="raiseEvent" imageURL="../rx_resources/ephox/images/tagTop16.gif" rxconfig="yes" name="InsertPTagsBefore" text="Insert paragraph tags before existing content" value="RxEphoxInsertPTagsA"/>
          <customMenuItem action="raiseEvent" imageURL="../rx_resources/ephox/images/tagBottom16.gif" rxconfig="yes" name="InsertPTagsAfter" text="Insert paragraph tags after existing content" value="RxEphoxInsertPTagsB"/>
          <menuSeparator/>
@@ -236,7 +236,7 @@
          <toolbarButton name="HLink"/>         
          <customToolbarButton action="raiseEvent" imageURL="../rx_resources/ephox/images/slink.gif" name="CMSLink" rxconfig="yes" text="Insert Rhythmyx inline link" value="RxEphoxInlineLink"/>
          <customToolbarButton action="raiseEvent" imageURL="../rx_resources/ephox/images/variant.gif" name="CMSVariant" rxconfig="yes" text="Insert Rhythmyx Template" value="RxEphoxVariantLink"/>
-   		 <customToolbarButton action="raiseEvent" imageURL="../rx_resources/ephox/images/insertBreak.gif" name="InsertPageBreak" rxconfig="yes" text="Insert Page Break" value="RxEphoxInsertPageBreak"/>               
+   		 <customToolbarButton action="raiseEvent" imageURL="../rx_resources/ephox/images/insertBreak.gif" name="InsertPageBreak" text="Insert Page Break" value="RxEphoxInsertPageBreak"/>               
          <toolbarSeparator/>
          <customToolbarButton action="raiseEvent" imageURL="../rx_resources/ephox/images/deletevariant.gif" name="DeleteVariant" text="Delete Inline Templates" value="RxDeleteVariant"/>
          <toolbarButton name="RemoveHyperlink"/>
