@@ -22,14 +22,18 @@
 
 package com.percussion.pso.paginator;
 
+import static java.text.MessageFormat.*;
+
 import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.xml.sax.InputSource;
+
 import com.percussion.extension.IPSJexlExpression;
 import com.percussion.extension.IPSJexlMethod;
 import com.percussion.extension.IPSJexlParam;
@@ -54,6 +58,8 @@ public class Paginator extends PSJexlUtilBase implements IPSJexlExpression {
             asm = PSAssemblyServiceLocator.getAssemblyService();
     }
 
+    
+    
     /**
      * Default constructor.
      */
@@ -61,6 +67,22 @@ public class Paginator extends PSJexlUtilBase implements IPSJexlExpression {
 
     }
 
+    /**
+     * Used by the paginator container as reference to the jexl object.
+     */
+    private Paginator extension = this;
+    
+    /**
+     * 
+     * A Java Bean thats contains all the pagination information of
+     * the current page (getAssemblyItem).
+     * 
+     * This bean is easier to use then calling the jexl methods directly
+     * as you don't have to keep passing the same arguments around.
+     * 
+     * @author adamgent
+     *
+     */
     public abstract class PaginatorContainer {
         private String location;
 
@@ -73,6 +95,19 @@ public class Paginator extends PSJexlUtilBase implements IPSJexlExpression {
         private int pageSize;
 
         private List<String> pageLinks;
+        
+        @SuppressWarnings("unchecked")
+        private Map params;
+
+        @SuppressWarnings("unchecked")
+        public Map getParams() {
+            return params;
+        }
+
+        @SuppressWarnings("unchecked")
+        public void setParams(Map params) {
+            this.params = params;
+        }
 
         public int getCurrentPageNo() {
             return currentPageNo;
@@ -142,30 +177,40 @@ public class Paginator extends PSJexlUtilBase implements IPSJexlExpression {
             this.pageLinks = pageLinks;
         }
 
-        public abstract List<IPSAssemblyItem> getPage();
+        public abstract List<IPSAssemblyResult> getPageResults(Number page);
+        
+        public abstract List<IPSAssemblyResult> getPageResults();
 
     }
 
+    /**
+     * This paginator container is used for slot pagination.
+     * 
+     * @author adamgent
+     *
+     */
     public class SlotPaginatorContainer extends PaginatorContainer {
         private String slot;
 
         @SuppressWarnings("unchecked")
-        public SlotPaginatorContainer(int pageSize, String slot,
-                IPSAssemblyItem item) throws Throwable {
+        public SlotPaginatorContainer(
+                Number pageSize, 
+                String slot,
+                IPSAssemblyItem item,
+                Map params) throws Throwable {
             this.slot = slot;
 
             String contextString = item.getParameterValue("sys_context", null);
             String pageNoString = item.getParameterValue("pageno", "1");
             int context = Integer.parseInt(contextString);
             PSLocationUtils util = new PSLocationUtils();
-            Map params = item.getParameters();
+            setParams(params);
             setLocation(util.generate(item, item.getTemplate()));
             setAssemblyItem(item);
-            setPageCount(getSlotPageCountN(item, slot, params,
-                    new Integer(pageSize)).intValue());
+            setPageCount(getSlotPageCountN(item, slot, params, pageSize).intValue());
             setPageLinks(PaginatorUtils.createLocationList(getLocation(),
                     getPageCount(), context));
-            setPageSize(pageSize);
+            setPageSize(pageSize.intValue());
             setCurrentPageNo(Integer.parseInt(pageNoString));
 
         }
@@ -178,13 +223,24 @@ public class Paginator extends PSJexlUtilBase implements IPSJexlExpression {
             this.slot = slot;
         }
 
+        @SuppressWarnings("unchecked")
         @Override
-        public List<IPSAssemblyItem> getPage() {
-            // TODO Auto-generated method stub
-            // return null;
-            throw new UnsupportedOperationException(
-                    "getPage is not yet supported");
+        public List<IPSAssemblyResult> getPageResults(Number page) {
+            try {
+                return extension.getSlotPageN(getAssemblyItem(), getSlot(), getParams(), new Long(getPageSize()), page.longValue());
+            } catch (Throwable e) {
+                String err = format("Failed to get page: {0} for pageSize: {1} with slot {2} for item: {3}", 
+                        page, getPageSize(), getSlot(), getAssemblyItem().getId().toString() );
+                log.error(err,e);
+                throw new RuntimeException(err, e);
+            }
         }
+        
+        public List<IPSAssemblyResult> getPageResults() {
+            return getPageResults(getCurrentPageNo());
+        }
+        
+            
     }
 
     /**
@@ -353,7 +409,18 @@ public class Paginator extends PSJexlUtilBase implements IPSJexlExpression {
             @IPSJexlParam(name = "pageSize", description = "number of items per page") })
     public SlotPaginatorContainer getSlotPaginator(IPSAssemblyItem item,
             String slot, Number pageSize) throws Throwable {
-        return new SlotPaginatorContainer(pageSize.intValue(), slot, item);
+        return new SlotPaginatorContainer(pageSize.intValue(), slot, item, item.getParameters());
+    }
+    
+    
+    @IPSJexlMethod(description = "Gets a paginator for a slot", params = {
+            @IPSJexlParam(name = "item", description = "current item"),
+            @IPSJexlParam(name = "slot", description = "slot to paginate"),
+            @IPSJexlParam(name = "pageSize", description = "number of items per page"), 
+            @IPSJexlParam(name = "params", description = "slot parameters") })
+    public SlotPaginatorContainer getSlotPaginator(IPSAssemblyItem item,
+            String slot, Number pageSize, Map<String,Object> params) throws Throwable {
+        return new SlotPaginatorContainer(pageSize.intValue(), slot, item, params);
     }
 
     /**
