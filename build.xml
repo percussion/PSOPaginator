@@ -162,9 +162,6 @@
 			
 			<zipfileset dir="Rx_Resources_Ephox/rx_resources/ephox/images" includes="**.*" 
 				prefix="Rx_Resources_Ephox/rx_resources/ephox/images/"/>
-			
-			<zipfileset dir="Rx_Resources_Ephox/rx_resources/stylesheets" includes="**.*" 
-				prefix="Rx_Resources_Ephox/rx_resources/stylesheets"/>
 			<zipfileset dir="spring"  prefix="spring" />
 			<fileset dir="." includes="readme.txt, build.number" />
 			<fileset dir="." includes="deploy.xml *.xslt"/>
