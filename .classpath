@@ -21,16 +21,16 @@
 	<classpathentry kind="lib" path="ivylib/ejb3-persistence.jar"/>
 	<classpathentry kind="lib" path="ivylib/hamcrest-core.jar"/>
 	<classpathentry kind="lib" path="ivylib/hamcrest-library.jar"/>
-	<classpathentry kind="lib" path="ivylib/hibernate3.jar"/>
 	<classpathentry kind="lib" path="ivylib/hibernate-annotations.jar"/>
+	<classpathentry kind="lib" path="ivylib/hibernate3.jar"/>
 	<classpathentry kind="lib" path="ivylib/javax.servlet.jar"/>
 	<classpathentry kind="lib" path="ivylib/jcr.jar"/>
 	<classpathentry kind="lib" path="ivylib/jdbc2_0-stdext.jar"/>
-	<classpathentry kind="lib" path="ivylib/jmock.jar"/>
-	<classpathentry kind="lib" path="ivylib/jmock1.jar"/>
 	<classpathentry kind="lib" path="ivylib/jmock-cglib.jar"/>
 	<classpathentry kind="lib" path="ivylib/jmock-junit3.jar"/>
 	<classpathentry kind="lib" path="ivylib/jmock-junit4.jar"/>
+	<classpathentry kind="lib" path="ivylib/jmock.jar"/>
+	<classpathentry kind="lib" path="ivylib/jmock1.jar"/>
 	<classpathentry kind="lib" path="ivylib/jta.jar"/>
 	<classpathentry kind="lib" path="ivylib/junit.jar"/>
 	<classpathentry kind="lib" path="ivylib/percbeans.jar"/>
@@ -43,14 +43,14 @@
 	<classpathentry kind="lib" path="ivylib/rxmisctools.jar"/>
 	<classpathentry kind="lib" path="ivylib/rxpublisher.jar"/>
 	<classpathentry kind="lib" path="ivylib/rxserver.jar"/>
-	<classpathentry kind="lib" path="ivylib/rxservices.jar" sourcepath="D:/p4/6.5.2/services/src"/>
+	<classpathentry kind="lib" path="ivylib/rxservices.jar"/>
 	<classpathentry kind="lib" path="ivylib/rxtablefactory.jar"/>
 	<classpathentry kind="lib" path="ivylib/rxutils.jar"/>
 	<classpathentry kind="lib" path="ivylib/rxwebservices.jar"/>
 	<classpathentry kind="lib" path="ivylib/saxon.jar"/>
+	<classpathentry kind="lib" path="ivylib/spring-mock.jar"/>
 	<classpathentry kind="lib" path="ivylib/spring.jar"/>
 	<classpathentry kind="lib" path="ivylib/stax-api.jar"/>
 	<classpathentry kind="lib" path="ivylib/Tidy.jar"/>
-	<classpathentry kind="lib" path="ivylib/spring-mock.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
