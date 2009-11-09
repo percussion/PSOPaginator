@@ -64,18 +64,7 @@
    		<echo>Deployment complete</echo>
 	</target>
 	
-	<target name="addProperty" description="adds the necessary property to the UserDispatcher-servlet and copies the new file">
-		<echo>Transforming UserDispatcher-servlet</echo>
-		<copy file="${RHYTHMYX.spring}/UserDispatcher-servlet.xml" todir=""/>
-		<xslt in="UserDispatcher-servlet.xml" style="${stylesheet}" out="Output.xml" force="yes" />
-		<!-- echo>Deleted extraneous files</echo -->
-		<!-- delete file="${stylesheet}"/ -->
-		<!-- delete file="UserDispatcher-servlet.xml"/ -->
-		<echo>Updated UserDispatcher-servlet.xml</echo>
-		<copy file="Output.xml" tofile="UserDispatcher-servlet.xml" />
-		<copy file="UserDispatcher-servlet.xml" todir="${RHYTHMYX.spring}" />
-	</target>
-
+	
 	<target name="installExtensions">
 	    <fail unless="RHYTHMYX.home" message="You must set the RHYTHMYX_HOME environment variable" />
 		<java classname="com.percussion.util.PSExtensionInstallTool" fork="true">
